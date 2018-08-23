@@ -5,11 +5,13 @@
                  [reagent "0.8.1"]
                  [re-frame "0.10.5"]]
 
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"]
+            [lein-doo "0.1.10"]]
 
   :min-lein-version "2.5.3"
 
-  :source-paths ["src/clj" "src/cljs"]
+  :source-paths ["src/cljs"]
+  :test-paths ["test/cljs"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
