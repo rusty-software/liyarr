@@ -11,7 +11,7 @@
     (is (= 3 (count three-dice)))
     (is (legit-value? three-dice))))
 
-(deftest test-larger-bid
+(deftest test-larger-bid?
   (is (game/larger-bid? {:quantity 2 :rank 3}
                         {:quantity 2 :rank 4}))
   (is (game/larger-bid? {:quantity 2 :rank 3}
@@ -21,7 +21,16 @@
   (is (not (game/larger-bid? {:quantity 3 :rank 1}
                              {:quantity 2 :rank 6}))))
 
-(deftest test-bid)
+(deftest test-bid-satisfied?
+  (is (game/bid-satisfied? {:quantity 2 :rank 5}
+                           [[1 2 3 4 5]
+                            [2 3 4 5 6]]))
+  (is (game/bid-satisfied? {:quantity 2 :rank 5}
+                           [[1 2 3 5 5]
+                            [2 3 4 4 6]]))
+  (is (not (game/bid-satisfied? {:quantity 2 :rank 6}
+                                [[1 2 3 4 5]
+                                 [2 3 4 5 6]]))))
 
 (deftest test-challenge)
 

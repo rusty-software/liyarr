@@ -9,10 +9,17 @@
             (inc (rand-int 6))))))
 
 (defn larger-bid?
-  "Given a first bid, returns true if the second bid is larger; otherwise, fasle."
+  "Given a first bid, returns true if the second bid is larger; otherwise, false."
   [first-bid second-bid]
   (let [{first-quantity :quantity first-rank :rank} first-bid
         {second-quantity :quantity second-rank :rank} second-bid]
     (or (> second-quantity first-quantity)
         (and (= second-quantity first-quantity)
              (> second-rank first-rank)))))
+
+(defn bid-satisfied?
+  "Given a bid, returns true if the quantity and rank are covered by the collection of dice; otherwise, false."
+  [{:keys [quantity rank]} dice-hands]
+  (let [rank-frequencies (frequencies (flatten dice-hands))
+        rank-quantity (get rank-frequencies rank)]
+    (>= rank-quantity quantity)))
