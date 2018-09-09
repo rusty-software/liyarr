@@ -13,14 +13,14 @@
     (is (legit-value? three-dice))))
 
 (deftest test-larger-bid?
-  (is (game/larger-bid? {:quantity 2 :rank 3}
-                        {:quantity 2 :rank 4}))
-  (is (game/larger-bid? {:quantity 2 :rank 3}
-                        {:quantity 3 :rank 2}))
-  (is (not (game/larger-bid? {:quantity 3 :rank 3}
-                             {:quantity 3 :rank 2})))
-  (is (not (game/larger-bid? {:quantity 3 :rank 1}
-                             {:quantity 2 :rank 6}))))
+  (is (game/larger-bid? {::game/quantity 2 ::game/rank 3}
+                        {::game/quantity 2 ::game/rank 4}))
+  (is (game/larger-bid? {::game/quantity 2 ::game/rank 3}
+                        {::game/quantity 3 ::game/rank 2}))
+  (is (not (game/larger-bid? {::game/quantity 3 ::game/rank 3}
+                             {::game/quantity 3 ::game/rank 2})))
+  (is (not (game/larger-bid? {::game/quantity 3 ::game/rank 1}
+                             {::game/quantity 2 ::game/rank 6}))))
 
 (deftest test-bid-satisfied?
   (is (game/bid-satisfied? {:quantity 2 :rank 5}
