@@ -1,4 +1,15 @@
-(ns liyarr.game)
+(ns liyarr.game
+  (:require [clojure.spec.alpha :as s]))
+
+(s/def ::name string?)
+(s/def ::dice vector?)
+(s/def ::player (s/keys :req [::name ::dice]))
+
+(defn initialize-player
+  "Given a player name, returns a map representing the initial player state."
+  [name]
+  {::name name
+   ::dice [1 1 1 1 1]})
 
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."

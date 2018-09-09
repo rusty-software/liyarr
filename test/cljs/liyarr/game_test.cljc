@@ -1,6 +1,7 @@
 (ns liyarr.game-test
   (:require [clojure.test :refer [deftest testing is]]
-            [liyarr.game :as game]))
+            [liyarr.game :as game]
+            [clojure.spec.alpha :as s]))
 
 (deftest test-roll
   (let [legit-value? (fn [dice] (every? #(and (< 0 %) (> 7 %)) dice))
@@ -32,6 +33,7 @@
                                 [[1 2 3 4 5]
                                  [2 3 4 5 6]]))))
 
-(deftest test-challenge)
+(deftest test-initialize-player
+  (let [player (game/initialize-player "foo")]
+    (is (s/valid? ::game/player player) (s/explain ::game/player player))))
 
-(deftest test-winner?)
