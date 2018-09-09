@@ -46,3 +46,17 @@
 (deftest test-initialize-player
   (let [player (game/initialize-player "foo")]
     (is (s/valid? ::game/player player) (s/explain ::game/player player))))
+
+(deftest test-bid-spec
+  (let [valid-bid {::game/quantity 4 ::game/rank 2}
+        missing-quantity {::game/rank 2}
+        missing-rank {::game/quantity 4}
+        rank-too-high {::game/quantity 4 ::game/rank 7}
+        rank-too-low {::game/quantity 4 ::game/rank 0}
+        quantity-not-int {::game/quantity "4" ::game/rank 2}]
+    (is (s/valid? ::game/bid valid-bid) (s/explain ::game/bid valid-bid))
+    (is (not (s/valid? ::game/bid missing-quantity)) "Quantity should be required.")
+    (is (not (s/valid? ::game/bid missing-rank)) "Rank should be required.")
+    (is (not (s/valid? ::game/bid rank-too-high)) "Rank must be less than 7.")
+    (is (not (s/valid? ::game/bid rank-too-low)) "Rank must be greater than 0.")
+    (is (not (s/valid? ::game/bid quantity-not-int)) "Quantity must be an integer.")))

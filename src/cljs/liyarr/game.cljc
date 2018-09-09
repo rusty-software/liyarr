@@ -1,6 +1,10 @@
 (ns liyarr.game
   (:require [clojure.spec.alpha :as s]))
 
+(s/def ::quantity int?)
+(s/def ::rank #{1 2 3 4 5 6})
+(s/def ::bid (s/keys :req [::quantity ::rank]))
+
 (s/def ::name string?)
 (s/def ::dice #(and vector? (< (count %) 6)))
 (s/def ::player (s/keys :req [::name ::dice]))
