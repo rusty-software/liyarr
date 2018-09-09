@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::name string?)
-(s/def ::dice vector?)
+(s/def ::dice #(and vector? (< (count %) 6)))
 (s/def ::player (s/keys :req [::name ::dice]))
 
 (defn initialize-player

@@ -33,6 +33,16 @@
                                 [[1 2 3 4 5]
                                  [2 3 4 5 6]]))))
 
+(deftest test-player-spec
+  (let [valid-player {:liyarr.game/name "Player Name" :liyarr.game/dice [1 2 3 4 5]}
+        missing-name {:liyarr.game/dice [1 2 3 4 5]}
+        missing-dice {:liyarr.game/name "Player Name"}
+        too-many-dice {:liyarr.game/name "Player Name" :liyarr.game/dice [1 2 3 4 5 6]}]
+    (is (s/valid? ::game/player valid-player) (s/explain ::game/player valid-player))
+    (is (not (s/valid? ::game/player missing-name)) "Name should be required.")
+    (is (not (s/valid? ::game/player missing-dice)) "Dice should be required.")
+    (is (not (s/valid? ::game/player too-many-dice)) "Should not allow more than 5 dice.")))
+
 (deftest test-initialize-player
   (let [player (game/initialize-player "foo")]
     (is (s/valid? ::game/player player) (s/explain ::game/player player))))
