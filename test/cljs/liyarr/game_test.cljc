@@ -23,13 +23,13 @@
                              {::game/quantity 2 ::game/rank 6}))))
 
 (deftest test-bid-satisfied?
-  (is (game/bid-satisfied? {:quantity 2 :rank 5}
+  (is (game/bid-satisfied? {::game/quantity 2 ::game/rank 5}
                            [[1 2 3 4 5]
                             [2 3 4 5 6]]))
-  (is (game/bid-satisfied? {:quantity 2 :rank 5}
+  (is (game/bid-satisfied? {::game/quantity 2 ::game/rank 5}
                            [[1 2 3 5 5]
                             [2 3 4 4 6]]))
-  (is (not (game/bid-satisfied? {:quantity 2 :rank 6}
+  (is (not (game/bid-satisfied? {::game/quantity 2 ::game/rank 6}
                                 [[1 2 3 4 5]
                                  [2 3 4 5 6]]))))
 

@@ -34,7 +34,7 @@
 
 (defn bid-satisfied?
   "Given a bid, returns true if the quantity and rank are covered by the collection of dice; otherwise, false."
-  [{:keys [quantity rank]} dice-hands]
+  [{:keys [::quantity ::rank]} dice-hands]
   (let [rank-frequencies (frequencies (flatten dice-hands))
         rank-quantity (get rank-frequencies rank)]
     (>= rank-quantity quantity)))
