@@ -9,6 +9,8 @@
 (s/def ::dice #(and vector? (< (count %) 6)))
 (s/def ::player (s/keys :req [::name ::dice]))
 
+(s/def ::challenge-result #{:success :failure})
+
 (defn initialize-player
   "Given a player name, returns a map representing the initial player state."
   [name]
@@ -36,5 +38,24 @@
   "Given a bid, returns true if the quantity and rank are covered by the collection of dice; otherwise, false."
   [{:keys [::quantity ::rank]} dice-hands]
   (let [rank-frequencies (frequencies (flatten dice-hands))
-        rank-quantity (get rank-frequencies rank)]
+        rank-quantity (get rank-frequencies rank 0)]
     (>= rank-quantity quantity)))
+
+(defn previous-player
+  "Given a collection of players and a player index, returns the player at the previous position."
+  [players idx]
+  (if (zero? idx)
+    (get players (dec (count players)))
+    (get players (dec idx))))
+
+(defn challenge
+  "Given a collection of players, the current bid, and the index of the challenger, returns an updated collection
+  of players where the challenge loser's dice collection has been decremented."
+  [players current-bid current-player-idx]
+  (let [dice-hands (map ::dice players)
+        satisfied? (bid-satisfied? current-bid dice-hands)
+        result (if satisfied?
+                 :failure
+                 :success)]
+    {::challenge-result result}))
+

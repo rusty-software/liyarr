@@ -33,19 +33,26 @@
                                 [[1 2 3 4 5]
                                  [2 3 4 5 6]]))))
 
+(deftest test-previous-player
+  (let [players [{::game/name "Player 1" ::game/dice [1 1 1 1 1]}
+                 {::game/name "Player 2" ::game/dice [2 2 2 2 2]}
+                 {::game/name "Player 3" ::game/dice [3 3 3 3 3]}]]
+    (is (= {::game/name "Player 2" ::game/dice [2 2 2 2 2]} (game/previous-player players 2)))
+    (is (= {::game/name "Player 3" ::game/dice [3 3 3 3 3]} (game/previous-player players 0)))))
+
 (deftest test-player-spec
   (let [valid-player {::game/name "Player Name" ::game/dice [1 2 3 4 5]}
         missing-name {::game/dice [1 2 3 4 5]}
         missing-dice {::game/name "Player Name"}
         too-many-dice {::game/name "Player Name" ::game/dice [1 2 3 4 5 6]}]
-    (is (s/valid? ::game/player valid-player) (s/explain ::game/player valid-player))
+    (is (s/valid? ::game/player valid-player) #_(s/explain ::game/player valid-player))
     (is (not (s/valid? ::game/player missing-name)) "Name should be required.")
     (is (not (s/valid? ::game/player missing-dice)) "Dice should be required.")
     (is (not (s/valid? ::game/player too-many-dice)) "Should not allow more than 5 dice.")))
 
 (deftest test-initialize-player
   (let [player (game/initialize-player "foo")]
-    (is (s/valid? ::game/player player) (s/explain ::game/player player))))
+    (is (s/valid? ::game/player player) #_(s/explain ::game/player player))))
 
 (deftest test-bid-spec
   (let [valid-bid {::game/quantity 4 ::game/rank 2}
@@ -54,9 +61,24 @@
         rank-too-high {::game/quantity 4 ::game/rank 7}
         rank-too-low {::game/quantity 4 ::game/rank 0}
         quantity-not-int {::game/quantity "4" ::game/rank 2}]
-    (is (s/valid? ::game/bid valid-bid) (s/explain ::game/bid valid-bid))
+    (is (s/valid? ::game/bid valid-bid) #_(s/explain ::game/bid valid-bid))
     (is (not (s/valid? ::game/bid missing-quantity)) "Quantity should be required.")
     (is (not (s/valid? ::game/bid missing-rank)) "Rank should be required.")
     (is (not (s/valid? ::game/bid rank-too-high)) "Rank must be less than 7.")
     (is (not (s/valid? ::game/bid rank-too-low)) "Rank must be greater than 0.")
     (is (not (s/valid? ::game/bid quantity-not-int)) "Quantity must be an integer.")))
+
+(deftest test-challenge-succeeds
+  (let [players [{::game/name "Player 1" ::game/dice [1 1 1 1 1]}
+                 {::game/name "Player 2" ::game/dice [2 2 2 2 2]}
+                 {::game/name "Player 3" ::game/dice [3 3 3 3 3]}]
+        current-bid {::game/quantity 1 ::game/rank 4}
+        current-player-idx 1
+        challenge-result (game/challenge players current-bid current-player-idx)]
+    (is (= :success (::game/challenge-result challenge-result)))
+    #_(is (= [{::game/name "Player 1" ::game/dice [1 1 1 1 1]}
+            {::game/name "Player 2" ::game/dice [2 2 2 2]}
+            {::game/name "Player 3" ::game/dice [3 3 3 3 3]}]
+           (::game/players challenge-result)))))
+
+(deftest test-game-over?)
