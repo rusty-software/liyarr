@@ -41,12 +41,12 @@
         rank-quantity (get rank-frequencies rank 0)]
     (>= rank-quantity quantity)))
 
-(defn previous-player
-  "Given a collection of players and a player index, returns the player at the previous position."
-  [players idx]
-  (if (zero? idx)
-    (get players (dec (count players)))
-    (get players (dec idx))))
+(defn previous-player-idx
+  "Given a current player idx, returns the previous player's idx."
+  [current-idx player-count]
+  (if (zero? current-idx)
+    (dec player-count)
+    (dec current-idx)))
 
 (defn challenge
   "Given a collection of players, the current bid, and the index of the challenger, returns an updated collection
@@ -56,6 +56,13 @@
         satisfied? (bid-satisfied? current-bid dice-hands)
         result (if satisfied?
                  :failure
-                 :success)]
-    {::challenge-result result}))
+                 :success)
+        idx-to-penalize (if satisfied?
+                          current-player-idx
+                          (previous-player-idx current-player-idx (count players)))
+        player-to-penalize (get players idx-to-penalize)
+        penalized-player (update player-to-penalize ::dice (comp vec rest))
+        players (assoc players idx-to-penalize penalized-player)]
+    {::challenge-result result
+     ::players players}))
 
