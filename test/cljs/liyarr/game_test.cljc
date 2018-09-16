@@ -69,9 +69,25 @@
                                 [[1 2 3 4 5]
                                  [2 3 4 5 6]]))))
 
+(deftest test-ordered-indexes
+  (is (= [2 0 1] (game/ordered-indexes 1 3))))
+
 (deftest test-previous-player-idx
   (is (= 1 (game/previous-player-idx 2 3)))
   (is (= 2 (game/previous-player-idx 0 3))))
+
+(deftest test-next-player-idx-all-active-players
+  (let [players [{::game/name "Player 1" ::game/dice [1]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]]
+    (is (= 2 (game/next-player-idx players 1)))
+    (is (= 0 (game/next-player-idx players 2)))))
+
+(deftest test-next-player-idx-inactive-player
+  (let [players [{::game/name "Player 1" ::game/dice []}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]]
+    (is (= 1 (game/next-player-idx players 2)))))
 
 (deftest test-challenge-success
   (let [players [{::game/name "Player 1" ::game/dice [1 1 1 1 1]}
@@ -139,4 +155,15 @@
     (is (= 0 (:current-player-idx new-state)))
     (is (nil? (:penalized-player-idx new-state)))))
 
-(deftest test-initialize-round-loser-eliminated)
+#_(deftest test-initialize-round-loser-eliminated
+  (let [players [{::game/name "Player 1" ::game/dice [1]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]
+        game-state {:players players
+                    :current-player-idx 1
+                    :penalized-player-idx 0}
+        new-state (game/initialize-round game-state)]
+    (is (= 1 (:current-player-idx new-state)))
+    (is (nil? (:penalized-player-idx new-state)))))
+
+

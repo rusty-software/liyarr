@@ -44,12 +44,27 @@
         rank-quantity (get rank-frequencies rank 0)]
     (>= rank-quantity quantity)))
 
+(defn ordered-indexes
+  "Given a current index and a count of players, returns the next indexes of all future players."
+  [current-player-idx players-count]
+  (vec (concat (range (inc current-player-idx) players-count) (range 0 (inc current-player-idx)))))
+
 (defn previous-player-idx
   "Given a current player idx, returns the previous player's idx."
   [current-idx player-count]
   (if (zero? current-idx)
     (dec player-count)
     (dec current-idx)))
+
+(defn next-player-idx
+  "Give a collection of players and current player idx, returns the next active player's idx."
+  [players current-player-idx]
+  (let [idxs (ordered-indexes current-player-idx (count players))]
+    (loop [idx (first idxs)
+           idxs idxs]
+      (if (< 0 (count (get-in players [idx ::dice])))
+        idx
+        (recur (first idxs) (rest idxs))))))
 
 (defn challenge
   "Given a collection of players, the current bid, and the index of the challenger, returns an updated collection
