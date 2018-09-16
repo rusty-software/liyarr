@@ -99,15 +99,9 @@
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
   [{:keys [players current-player-idx penalized-player-idx] :as game-state}]
-  (let [next-idx (cond
-                   penalized-player-idx
-                   penalized-player-idx
-
-                   (= current-player-idx (dec (count players)))
-                   0
-
-                   :else
-                   (inc current-player-idx))
+  (let [next-idx (if penalized-player-idx
+                   (next-player-idx players (dec penalized-player-idx))
+                   (next-player-idx players current-player-idx))
         updated-players (for [player players]
                           (update player ::dice (comp roll count)))]
     (-> game-state
