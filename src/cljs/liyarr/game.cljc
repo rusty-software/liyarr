@@ -73,3 +73,17 @@
   (let [dice-counts (map count (map ::dice players))]
     (= 1 (count (filter #(< 0 %) dice-counts)))))
 
+(defn initialize-round
+  "Given a game state, updates the game state with a new round.
+
+  * All players' dice are shuffled
+  * Current player index is incremented in the case of a bid
+  * Current player index is set to the loser's index in the case of a challenge"
+  [{:keys [players current-player-idx] :as game-state}]
+  (let [next-idx (if (= current-player-idx (dec (count players)))
+                   0
+                   (inc current-player-idx))
+        updated-players (for [player players]
+                          (update player ::dice (comp roll count)))]
+    (assoc game-state :current-player-idx next-idx
+                      :players updated-players)))
