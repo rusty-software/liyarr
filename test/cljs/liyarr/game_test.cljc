@@ -72,9 +72,12 @@
 (deftest test-ordered-indexes
   (is (= [2 0 1] (game/ordered-indexes 1 3))))
 
-(deftest test-previous-player-idx
-  (is (= 1 (game/previous-player-idx 2 3)))
-  (is (= 2 (game/previous-player-idx 0 3))))
+(deftest test-previous-player-idx-all-active-players
+  (let [players [{::game/name "Player 1" ::game/dice [1]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]]
+    (is (= 1 (game/previous-player-idx players 2)))
+    (is (= 2 (game/previous-player-idx players 0)))))
 
 (deftest test-next-player-idx-all-active-players
   (let [players [{::game/name "Player 1" ::game/dice [1]}

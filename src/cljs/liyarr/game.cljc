@@ -49,12 +49,16 @@
   [current-player-idx players-count]
   (vec (concat (range (inc current-player-idx) players-count) (range 0 (inc current-player-idx)))))
 
+;; TODO: refactor out loop that's common to next and previous
 (defn previous-player-idx
   "Given a current player idx, returns the previous player's idx."
-  [current-idx player-count]
-  (if (zero? current-idx)
-    (dec player-count)
-    (dec current-idx)))
+  [players current-player-idx]
+  (let [idxs (concat (reverse (butlast (ordered-indexes current-player-idx (count players)))) [current-player-idx])]
+    (loop [idx (first idxs)
+           idxs idxs]
+      (if (< 0 (count (get-in players [idx ::dice])))
+        idx
+        (recur (first idxs) (rest idxs))))))
 
 (defn next-player-idx
   "Give a collection of players and current player idx, returns the next active player's idx."
@@ -73,7 +77,7 @@
   (let [dice-hands (map ::dice players)
         succeeded? (not (bid-satisfied? current-bid dice-hands))
         idx-to-penalize (if succeeded?
-                          (previous-player-idx current-player-idx (count players))
+                          (previous-player-idx players current-player-idx)
                           current-player-idx)
         player-to-penalize (get players idx-to-penalize)
         penalized-player (update player-to-penalize ::dice (comp vec rest))
