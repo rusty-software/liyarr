@@ -115,8 +115,12 @@
                  {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]
         game-state {:players players
                     :current-player-idx 1}
-        new-state (game/initialize-round game-state)]
+        game-state-0 {:players players
+                        :current-player-idx 2}
+        new-state (game/initialize-round game-state)
+        new-state-0 (game/initialize-round game-state-0)]
     (is (= 2 (:current-player-idx new-state)))
+    (is (= 0 (:current-player-idx new-state-0)))
     ;; TODO: the following might have false failures; clean up when it matters
     (is (not= [1 2 3 4 5] (get-in new-state [:players 0 ::game/dice]) (get-in new-state [:players 2 ::game/dice])))
     (is (not= [2 3 4 5] (get-in new-state [:players 1 ::game/dice])))))
