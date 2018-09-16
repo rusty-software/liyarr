@@ -71,3 +71,4 @@
   [players]
   (let [dice-counts (map count (map ::dice players))]
     (= 1 (count (filter #(< 0 %) dice-counts)))))
+
