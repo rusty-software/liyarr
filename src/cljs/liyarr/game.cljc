@@ -10,6 +10,7 @@
 (s/def ::player (s/keys :req [::name ::dice]))
 
 (s/def ::challenge-result #{:success :failure})
+(s/def ::players (s/coll-of ::player :kind vector?))
 
 (defn initialize-player
   "Given a player name, returns a map representing the initial player state."

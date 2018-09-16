@@ -27,6 +27,14 @@
     (is (not (s/valid? ::game/bid rank-too-low)) "Rank must be greater than 0.")
     (is (not (s/valid? ::game/bid quantity-not-int)) "Quantity must be an integer.")))
 
+(deftest test-players-spec
+  (let [valid-players [{::game/name "Player 1" ::game/dice [1 2 3 4 5]}
+                       {::game/name "Player 2" ::game/dice [1 2 3 4]}]
+        invalid-players [{::game/name "Player 1" ::game/dice [1 2 3 4 5]}
+                         {::game/name "Player 2" ::game/dices [1 2 3 4]}]]
+    (is (s/valid? ::game/players valid-players))
+    (is (not (s/valid? ::game/players invalid-players)))))
+
 (deftest test-initialize-player
   (let [player (game/initialize-player "foo")]
     (is (s/valid? ::game/player player) #_(s/explain ::game/player player))))
