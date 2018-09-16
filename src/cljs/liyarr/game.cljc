@@ -79,11 +79,19 @@
   * All players' dice are shuffled
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
-  [{:keys [players current-player-idx] :as game-state}]
-  (let [next-idx (if (= current-player-idx (dec (count players)))
+  [{:keys [players current-player-idx penalized-player-idx] :as game-state}]
+  (let [next-idx (cond
+                   penalized-player-idx
+                   penalized-player-idx
+
+                   (= current-player-idx (dec (count players)))
                    0
+
+                   :else
                    (inc current-player-idx))
         updated-players (for [player players]
                           (update player ::dice (comp roll count)))]
-    (assoc game-state :current-player-idx next-idx
-                      :players updated-players)))
+    (-> game-state
+        (assoc :current-player-idx next-idx
+               :players updated-players)
+        (dissoc :penalized-player-idx))))

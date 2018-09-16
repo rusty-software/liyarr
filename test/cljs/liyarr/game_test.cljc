@@ -125,6 +125,15 @@
     (is (not= [1 2 3 4 5] (get-in new-state [:players 0 ::game/dice]) (get-in new-state [:players 2 ::game/dice])))
     (is (not= [2 3 4 5] (get-in new-state [:players 1 ::game/dice])))))
 
-(deftest test-initialize-round-challenge-success)
-(deftest test-initialize-round-challenge-failure)
+(deftest test-initialize-round-challenge
+  (let [players [{::game/name "Player 1" ::game/dice [1 2 3 4 5]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]
+        game-state {:players players
+                    :current-player-idx 1
+                    :penalized-player-idx 0}
+        new-state (game/initialize-round game-state)]
+    (is (= 0 (:current-player-idx new-state)))
+    (is (nil? (:penalized-player-idx new-state)))))
+
 (deftest test-initialize-round-loser-eliminated)
