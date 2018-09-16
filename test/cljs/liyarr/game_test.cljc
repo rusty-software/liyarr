@@ -91,4 +91,12 @@
             {::game/name "Player 3" ::game/dice [3 3 3 3 4]}]
            (::game/players challenge-result)))))
 
-(deftest test-game-over?)
+(deftest test-game-over?
+  (let [players-go [{::game/name "Player 1" ::game/dice []}
+                    {::game/name "Player 2" ::game/dice []}
+                    {::game/name "Player 3" ::game/dice [4]}]
+        players-ngo [{::game/name "Player 1" ::game/dice []}
+                     {::game/name "Player 2" ::game/dice [2]}
+                     {::game/name "Player 3" ::game/dice [4]}]]
+    (is (game/game-over? players-go))
+    (is (not (game/game-over? players-ngo)))))

@@ -66,3 +66,8 @@
     {::challenge-result result
      ::players players}))
 
+(defn game-over?
+  "Given a collection of players, returns true if only one player has dice in their collection; otherwise, false."
+  [players]
+  (let [dice-counts (map count (map ::dice players))]
+    (= 1 (count (filter #(< 0 %) dice-counts)))))
