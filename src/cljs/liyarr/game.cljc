@@ -49,26 +49,26 @@
   [current-player-idx players-count]
   (vec (concat (range (inc current-player-idx) players-count) (range 0 (inc current-player-idx)))))
 
-;; TODO: refactor out loop that's common to next and previous
+(defn first-idx-with-dice
+  "Given a collection of players and an ordered index collection, returns the index of the first player with dice."
+  [players idxs]
+  (loop [idx (first idxs)
+         idxs idxs]
+    (if (< 0 (count (get-in players [idx ::dice])))
+      idx
+      (recur (first idxs) (rest idxs)))))
+
 (defn previous-player-idx
   "Given a current player idx, returns the previous player's idx."
   [players current-player-idx]
   (let [idxs (concat (reverse (butlast (ordered-indexes current-player-idx (count players)))) [current-player-idx])]
-    (loop [idx (first idxs)
-           idxs idxs]
-      (if (< 0 (count (get-in players [idx ::dice])))
-        idx
-        (recur (first idxs) (rest idxs))))))
+    (first-idx-with-dice players idxs)))
 
 (defn next-player-idx
   "Give a collection of players and current player idx, returns the next active player's idx."
   [players current-player-idx]
   (let [idxs (ordered-indexes current-player-idx (count players))]
-    (loop [idx (first idxs)
-           idxs idxs]
-      (if (< 0 (count (get-in players [idx ::dice])))
-        idx
-        (recur (first idxs) (rest idxs))))))
+    (first-idx-with-dice players idxs)))
 
 (defn challenge
   "Given a collection of players, the current bid, and the index of the challenger, returns an updated collection
