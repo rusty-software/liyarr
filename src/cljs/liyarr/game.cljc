@@ -9,8 +9,10 @@
 (s/def ::dice #(and vector? (< (count %) 6)))
 (s/def ::player (s/keys :req [::name ::dice]))
 
-(s/def ::challenge-result #{:success :failure})
+(s/def ::succeeded? boolean?)
+(s/def ::penalized-player-idx int?)
 (s/def ::players (s/coll-of ::player :kind vector?))
+(s/def ::challenge-result (s/keys :req [::succeeded? ::penalized-player-idx ::players]))
 
 (defn initialize-player
   "Given a player name, returns a map representing the initial player state."
@@ -54,17 +56,15 @@
   of players where the challenge loser's dice collection has been decremented."
   [players current-bid current-player-idx]
   (let [dice-hands (map ::dice players)
-        satisfied? (bid-satisfied? current-bid dice-hands)
-        result (if satisfied?
-                 :failure
-                 :success)
-        idx-to-penalize (if satisfied?
-                          current-player-idx
-                          (previous-player-idx current-player-idx (count players)))
+        succeeded? (not (bid-satisfied? current-bid dice-hands))
+        idx-to-penalize (if succeeded?
+                          (previous-player-idx current-player-idx (count players))
+                          current-player-idx)
         player-to-penalize (get players idx-to-penalize)
         penalized-player (update player-to-penalize ::dice (comp vec rest))
         players (assoc players idx-to-penalize penalized-player)]
-    {::challenge-result result
+    {::succeeded? succeeded?
+     ::penalized-player-idx idx-to-penalize
      ::players players}))
 
 (defn game-over?

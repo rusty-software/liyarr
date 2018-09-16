@@ -80,7 +80,9 @@
         current-bid {::game/quantity 1 ::game/rank 4}
         current-player-idx 1
         challenge-result (game/challenge players current-bid current-player-idx)]
-    (is (= :success (::game/challenge-result challenge-result)))
+    (is (s/valid? ::game/challenge-result challenge-result) #_(s/explain ::game/challenge-result challenge-result))
+    (is (::game/succeeded? challenge-result))
+    (is (= 0 (::game/penalized-player-idx challenge-result)))
     (is (= [{::game/name "Player 1" ::game/dice [1 1 1 1]}
             {::game/name "Player 2" ::game/dice [2 2 2 2 2]}
             {::game/name "Player 3" ::game/dice [3 3 3 3 3]}]
@@ -93,7 +95,8 @@
         current-bid {::game/quantity 1 ::game/rank 4}
         current-player-idx 1
         challenge-result (game/challenge players current-bid current-player-idx)]
-    (is (= :failure (::game/challenge-result challenge-result)))
+    (is (not (::game/succeeded? challenge-result)))
+    (is (= 1 (::game/penalized-player-idx challenge-result)))
     (is (= [{::game/name "Player 1" ::game/dice [1 1 1 1 1]}
             {::game/name "Player 2" ::game/dice [2 2 2 2]}
             {::game/name "Player 3" ::game/dice [3 3 3 3 4]}]
