@@ -169,4 +169,14 @@
     (is (= 1 (:current-player-idx new-state)))
     (is (nil? (:penalized-player-idx new-state)))))
 
-(deftest test-initialize-game)
+(deftest test-initialize-game
+  (let [raw-players {:players [{:name "Player 1"} {:name "Player 2"} {:name "Player 3"}]}
+        game-state (game/initilize-game raw-players)]
+    (prn 'game-state game-state)
+    (is (= 3 (count (:players game-state))))
+    (is (s/valid? ::game/player (get-in game-state [:players 0])))
+    (is (s/valid? ::game/player (get-in game-state [:players 1])))
+    (is (s/valid? ::game/player (get-in game-state [:players 2])))
+    (is (= "Player 1" (get-in game-state [:players 0 ::game/name])))
+    (is (= "Player 3" (get-in game-state [:players 2 ::game/name])))
+    (is (= 0 (:current-player-idx game-state)))))

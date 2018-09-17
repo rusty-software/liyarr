@@ -112,4 +112,7 @@
 (defn initilize-game
   "Given a map containing player info, initializes a game state using that info."
   [{:keys [players]}]
-  )
+  {:players (into []
+                  (for [player players]
+                    (-> (initialize-player (:name player)))))
+   :current-player-idx 0})
