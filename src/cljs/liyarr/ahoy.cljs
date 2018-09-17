@@ -1,11 +1,11 @@
 (ns liyarr.ahoy
   (:require
-   [reagent.core :as reagent]
-   [re-frame.core :as re-frame]
-   [liyarr.events :as events]
-   [liyarr.views :as views]
-   [liyarr.config :as config]
-   [liyarr.firebase :as firebase]))
+    [reagent.core :as reagent]
+    [re-frame.core :as rf]
+    [liyarr.config :as config]
+    [liyarr.events]
+    [liyarr.firebase :as firebase]
+    [liyarr.views :as views]))
 
 
 (defn dev-setup []
@@ -14,12 +14,12 @@
     (println "dev mode")))
 
 (defn mount-root []
-  (re-frame/clear-subscription-cache!)
+  (rf/clear-subscription-cache!)
   (reagent/render [views/main-panel]
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
-  (re-frame/dispatch-sync [::events/initialize-db])
+  (rf/dispatch-sync [:initialize-db])
   (dev-setup)
   (firebase/init)
   (mount-root))
