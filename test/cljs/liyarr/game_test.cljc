@@ -169,4 +169,4 @@
     (is (= 1 (:current-player-idx new-state)))
     (is (nil? (:penalized-player-idx new-state)))))
 
-
+(deftest test-initialize-game)
