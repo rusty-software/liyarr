@@ -2,7 +2,8 @@
   (:require
     [re-frame.core :as rf]
     [liyarr.config :as config]
-    [liyarr.db :as db]))
+    [liyarr.db :as db]
+    [liyarr.game :as game]))
 
 (rf/reg-event-db
   :initialize-db
@@ -38,3 +39,18 @@
                         :value {:players [{:name (get-in db [:user :email])}]}
                         :on-success #(js/console.log "wrote success")
                         :on-failure [:firebase-error]}})))
+
+(defn game-event! [event f & args]
+  (let [enabled? (atom true)]
+    (rf/reg-event-fx
+     event
+     (fn [{:keys [db]} _]
+       (js/setTimeout (fn [_] (compare-and-set! enabled? false true)) 500)
+       (if (compare-and-set! enabled? true false)
+         {:firebase/swap! {:path [(keyword (:game-code db))]
+                           :function #(apply f % args)
+                           :on-success #(println (str event " success"))
+                           :on-failure [:firebase-error]}}
+         {})))))
+
+(game-event! :start-game game/initialize-game)
