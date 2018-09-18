@@ -23,6 +23,11 @@
   (fn [db _] (:user db)))
 
 (rf/reg-sub
+  :game-code
+  (fn [db]
+    (:game-code db)))
+
+(rf/reg-sub
  :game-state
  (fn [_ _]
    [(rf/subscribe [:game])
@@ -41,3 +46,5 @@
    (rf/subscribe [:user]))
  (fn [user _]
    (boolean user)))
+
+

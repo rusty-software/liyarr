@@ -30,11 +30,10 @@
       :target "_blank"}
      "wiki"]
     " for information on how to play."]
-   #_(when-let [code (listen :game-code)]
+   (when-let [code (listen :game-code)]
      [:h4
-      {:class "alert alert-success"}
       (str "Game code: " code)])
-   #_(let [game-state (listen :game-state)]
+   (let [game-state (listen :game-state)]
      (when (or (= :over game-state)
                (= :not-started game-state)))
      [start-button])
@@ -58,12 +57,13 @@
 
 (defn no-game [])
 
-(defn game [])
+(defn game []
+  [:div "hi game"])
 
 (defn main-panel []
   [:div
    [header]
-   #_[:div
+   [:div
     (if (= :not-signed-in (listen :game-state))
       [not-signed-in]
       (let [view (listen :view)]
