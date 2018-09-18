@@ -3,7 +3,8 @@
                  [org.clojure/clojurescript "1.10.339"]
                  [cljsjs/firebase "5.0.4-1"]
                  [reagent "0.8.1"]
-                 [re-frame "0.10.5"]]
+                 [re-frame "0.10.5"]
+                 [com.degel/re-frame-firebase "0.7.0"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-doo "0.1.10"]]
