@@ -40,6 +40,23 @@
                         :on-success #(js/console.log "wrote success")
                         :on-failure [:firebase-error]}})))
 
+(rf/reg-event-fx
+  :join-game
+  (fn [{:keys [db]} [_ code]]
+    {:db (assoc db
+           :game-code code
+           :view :pregame)
+     :firebase/swap! {:path [(keyword code) :players]
+                      :function (fn [players]
+                                  (let [user-id (get-in db [:user :email])]
+                                    (if (some (comp (partial = user-id) :name) players)
+                                      players
+                                      (conj (vec players) {:name user-id
+                                                           :photo-url (get-in db [:user :photo-url])
+                                                           :display-name (get-in db [:user :display-name])}))))
+                      :on-success #(println "join game success")
+                      :on-failure [:firebase-error]}}))
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx

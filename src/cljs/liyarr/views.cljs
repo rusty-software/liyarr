@@ -28,13 +28,14 @@
       :target "_blank"}
      "wiki"]
     " for information on how to play."]
-   (when-let [code (listen :game-code)]
-     [:h4
-      (str "Game code: " code)])
-   (let [game-state (listen :game-state)]
-     (when (or (= :over game-state)
-               (= :not-started game-state)))
-     [start-button])
+   (let [code (listen :game-code)]
+     (when code
+       [:h4
+        (str "Game code: " code)])
+     (let [game-state (listen :game-state)]
+       (when (or (= :over game-state)
+                 (and code (= :not-started game-state)))
+         [start-button])))
    (if (listen :logged-in?)
      [:button
       {:on-click #(rf/dispatch [:sign-out])}
@@ -126,6 +127,7 @@
           [game])))]
    (when config/debug?
      [:div
+      {:style {:text-align "left"}}
       [:hr]
       [:pre
        (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])

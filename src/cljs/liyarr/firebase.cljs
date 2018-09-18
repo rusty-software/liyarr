@@ -5,8 +5,7 @@
     [iron.re-utils :as re-utils]
     [clojure.string :as str]))
 
-(defn- fb-ref [path]
-  {:pre [(re-utils/validate :firebase/fb-path path)]}
+(defn fb-ref [path]
   (.ref (js/firebase.database)
         (str/join "/" (clj->js path))))
 
