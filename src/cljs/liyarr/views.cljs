@@ -37,8 +37,7 @@
      [start-button])
    (if (listen :logged-in?)
      [:button
-      {:class "btn btn-warning"
-       :on-click #(rf/dispatch [:sign-out])}
+      {:on-click #(rf/dispatch [:sign-out])}
       "Sign Out"]
      [:div
       [:button
@@ -51,7 +50,11 @@
        "If you click Sign In and nothing happens, check your pop-up blocker!"]])
    [:hr]])
 
-(defn not-signed-in [])
+(defn not-signed-in []
+  [:div
+   {:class "text-center"}
+   [:h3 "Welcome to Liyarr!"]
+   [:p "Sign in with a Google account by clicking above to join the game."]])
 
 (defn no-game []
   [:div
@@ -59,15 +62,15 @@
    [:div
     {:class "row"}
     [:div
-     {:class "col"}
+     {:class "six columns"}
      [:form
-      {:class "form-inline"
-       :style {:display "inline-block"}
-       :on-submit (fn [e]
+      {:on-submit (fn [e]
                     (.preventDefault e)
                     (rf/dispatch [:join-game (str/upper-case (.-value (.getElementById js/document "gameCodeInput")))]))}
       [:div
-       {:class "form-group"}
+       [:label
+        {:for "gameCodeInput"}
+        "Enter a code to join a game:"]
        [:input
         {:class "text-uppercase form-control mx-1"
          :id "gameCodeInput"
@@ -75,14 +78,18 @@
          :name "game"
          :placeholder "Game Code"
          :required true}]
+       [:br]
        [:button
-        {:class "btn btn-info"
+        {:class "button-primary"
          :type "submit"}
         "Join Game"]]]]
     [:div
-     {:class "col"}
+     {:class "six columns"}
+     [:label
+      {:for "createGameBtn"}
+      "Or, create a new game code:"]
      [:button
-      {:class "btn btn-danger"
+      {:id "createGameBtn"
        :on-click #(rf/dispatch [:create-game])} "Create new game"]]]])
 
 (defn pending-game []
@@ -117,7 +124,7 @@
         (if (= :no-game view)
           [no-game]
           [game])))]
-   #_(when config/debug?
+   (when config/debug?
      [:div
       [:hr]
       [:pre

@@ -19,9 +19,9 @@
           nil)))))
 
 (rf/reg-sub
- :view
- (fn [db _]
-   (:view db)))
+  :view
+  (fn [db _]
+    (:view db)))
 
 (rf/reg-sub
   :user
@@ -33,28 +33,28 @@
     (:game-code db)))
 
 (rf/reg-sub
- :game-state
- (fn [_ _]
-   [(rf/subscribe [:game])
-    (rf/subscribe [:user])])
- (fn [[game user] _]
-   (if (nil? user)
-     :not-signed-in
-     (condp = (:game-over? game)
-       true :over
-       false :playing
-       nil :not-started))))
+  :game-state
+  (fn [_ _]
+    [(rf/subscribe [:game])
+     (rf/subscribe [:user])])
+  (fn [[game user] _]
+    (if (nil? user)
+      :not-signed-in
+      (condp = (:game-over? game)
+        true :over
+        false :playing
+        nil :not-started))))
 
 (rf/reg-sub
- :logged-in?
- (fn [_ _]
-   (rf/subscribe [:user]))
- (fn [user _]
-   (boolean user)))
+  :logged-in?
+  (fn [_ _]
+    (rf/subscribe [:user]))
+  (fn [user _]
+    (boolean user)))
 
 (rf/reg-sub
- :players
- (fn [_ _]
+  :players
+  (fn [_ _]
     (rf/subscribe [:game]))
- (fn [game _]
-   (:players game)))
+  (fn [game _]
+    (:players game)))
