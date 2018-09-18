@@ -109,7 +109,7 @@
                :players updated-players)
         (dissoc :penalized-player-idx))))
 
-(defn initilize-game
+(defn initialize-game
   "Given a map containing player info, initializes a game state using that info."
   [{:keys [players]}]
   {:players (into []

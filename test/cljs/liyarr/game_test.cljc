@@ -171,8 +171,7 @@
 
 (deftest test-initialize-game
   (let [raw-players {:players [{:name "Player 1"} {:name "Player 2"} {:name "Player 3"}]}
-        game-state (game/initilize-game raw-players)]
-    (prn 'game-state game-state)
+        game-state (game/initialize-game raw-players)]
     (is (= 3 (count (:players game-state))))
     (is (s/valid? ::game/player (get-in game-state [:players 0])))
     (is (s/valid? ::game/player (get-in game-state [:players 1])))
