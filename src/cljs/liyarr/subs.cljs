@@ -19,6 +19,11 @@
           nil)))))
 
 (rf/reg-sub
+ :view
+ (fn [db _]
+   (:view db)))
+
+(rf/reg-sub
   :user
   (fn [db _] (:user db)))
 
@@ -47,4 +52,9 @@
  (fn [user _]
    (boolean user)))
 
-
+(rf/reg-sub
+ :players
+ (fn [_ _]
+    (rf/subscribe [:game]))
+ (fn [game _]
+   (:players game)))
