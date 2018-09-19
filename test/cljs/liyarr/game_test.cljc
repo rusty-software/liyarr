@@ -37,14 +37,15 @@
 
 (deftest test-initialize-player
   (let [player (game/initialize-player "foo")]
-    (is (s/valid? ::game/player player) #_(s/explain ::game/player player))))
+    (is (s/valid? ::game/player player) #_(s/explain ::game/player player))
+    (is (= 5 (count (::game/dice player))))))
 
 (deftest test-roll
   (let [legit-value? (fn [dice] (every? #(and (< 0 %) (> 7 %)) dice))
-        six-dice (game/roll 5)
+        five-dice (game/roll 5)
         three-dice (game/roll 3)]
-    (is (= 5 (count six-dice)))
-    (is (legit-value? six-dice))
+    (is (= 5 (count five-dice)))
+    (is (legit-value? five-dice))
     (is (= 3 (count three-dice)))
     (is (legit-value? three-dice))))
 
@@ -178,4 +179,6 @@
     (is (s/valid? ::game/player (get-in game-state [:players 2])))
     (is (= "Player 1" (get-in game-state [:players 0 ::game/name])))
     (is (= "Player 3" (get-in game-state [:players 2 ::game/name])))
-    (is (= 0 (:current-player-idx game-state)))))
+    (is (= 0 (:current-player-idx game-state)))
+    (is (not (nil? (:game-over? game-state))))
+    (is (not (:game-over? game-state)))))

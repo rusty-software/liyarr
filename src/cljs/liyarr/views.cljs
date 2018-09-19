@@ -105,10 +105,24 @@
          {:key idx}
          (:name player)]))]))
 
+(defn active-game []
+  (let [my-turn? (listen :my-turn?)
+        players (listen :players)
+        current-player-idx (listen :current-player-idx)
+        dice (get-in players [current-player-idx :dice])]
+    (println "my-turn?" my-turn?)
+    (println "players" players)
+    (println "current-player-idx" current-player-idx)
+    (println "dice" dice)
+    [:div
+     "Check the console"
+     ]
+    ))
+
 (defn game []
   (condp = (listen :game-state)
     #_#_:over [game-over]
-    #_#_:playing [active-game]
+    :playing [active-game]
     :not-started [pending-game]))
 
 (defn main-panel []

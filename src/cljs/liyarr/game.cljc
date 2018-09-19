@@ -14,12 +14,6 @@
 (s/def ::players (s/coll-of ::player :kind vector?))
 (s/def ::challenge-result (s/keys :req [::succeeded? ::penalized-player-idx ::players]))
 
-(defn initialize-player
-  "Given a player name, returns a map representing the initial player state."
-  [name]
-  {::name name
-   ::dice [1 1 1 1 1]})
-
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."
   [qty]
@@ -92,6 +86,12 @@
   (let [dice-counts (map count (map ::dice players))]
     (= 1 (count (filter #(< 0 %) dice-counts)))))
 
+(defn initialize-player
+  "Given a player name, returns a map representing the initial player state."
+  [name]
+  {::name name
+   ::dice (roll 5)})
+
 (defn initialize-round
   "Given a game state, updates the game state with a new round.
 
@@ -115,4 +115,5 @@
   {:players (into []
                   (for [player players]
                     (-> (initialize-player (:name player)))))
-   :current-player-idx 0})
+   :current-player-idx 0
+   :game-over? false})

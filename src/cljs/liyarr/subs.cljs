@@ -58,3 +58,19 @@
     (rf/subscribe [:game]))
   (fn [game _]
     (:players game)))
+
+(rf/reg-sub
+ :current-player-idx
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:current-player-idx game)))
+
+(rf/reg-sub
+  :my-turn?
+  (fn [_ _]
+   [(rf/subscribe [:game])
+    (rf/subscribe [:user])])
+  (fn [[game user] _]
+    (let [current-player-idx (get game :current-player-idx)]
+      (= (:email user) (get-in game [:players current-player-idx :name])))))
