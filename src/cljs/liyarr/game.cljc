@@ -87,10 +87,12 @@
     (= 1 (count (filter #(< 0 %) dice-counts)))))
 
 (defn initialize-player
-  "Given a player name, returns a map representing the initial player state."
-  [name]
+  "Given a raw player, returns a map representing the initial player state."
+  [{:keys [name photo-url display-name]}]
   {::name name
-   ::dice (roll 5)})
+   ::dice (roll 5)
+   ::photo-url photo-url
+   ::display-name display-name})
 
 (defn initialize-round
   "Given a game state, updates the game state with a new round.
@@ -114,7 +116,7 @@
   [{:keys [players]}]
   {:players (into []
                   (for [player players]
-                    (-> (initialize-player (:name player)))))
+                    (-> (initialize-player player))))
    :current-bid {::quantity 0 ::rank 1}
    :current-player-idx 0
    :game-over? false})

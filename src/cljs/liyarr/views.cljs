@@ -124,10 +124,12 @@
       {:class "one column" :style {:text-align "left"}}
       [:h5 (str rank "'s")]]])
 
-(defn current-player-display [current-player-idx my-turn?]
+(defn current-player-display [{:keys [name photo-url display-name]} my-turn?]
   [:div
    {:class "boxed"}
-   "current player display"])
+   (if my-turn?
+     [:div "Your turn!"]
+     [:div (str display-name "' turn!")])])
 
 (defn player-list-display [players current-player-idx]
   [:div
@@ -139,15 +141,15 @@
         players (listen :players)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
+        current-player (get players current-player-idx)
         dice (get-in players [current-player-idx :dice])]
     [:div
      [current-bid-display current-bid]
-
      [:div
       {:class "row"}
       [:div
        {:class "nine columns"}
-       [current-player-display current-player-idx my-turn?]]
+       [current-player-display current-player my-turn?]]
       [:div
        {:class "three columns"}
        [player-list-display players current-player-idx]]]]

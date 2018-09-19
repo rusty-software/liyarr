@@ -36,7 +36,7 @@
     (is (not (s/valid? ::game/players invalid-players)))))
 
 (deftest test-initialize-player
-  (let [player (game/initialize-player "foo")]
+  (let [player (game/initialize-player {:name "foo" :photo-url "bar" :display-name "baz"})]
     (is (s/valid? ::game/player player) #_(s/explain ::game/player player))
     (is (= 5 (count (::game/dice player))))))
 
