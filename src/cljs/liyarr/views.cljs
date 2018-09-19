@@ -105,18 +105,53 @@
          {:key idx}
          (:name player)]))]))
 
+(defn current-bid-display [{:keys [quantity rank]}]
+  [:div
+     {:class "row"}
+     [:div
+      {:class "three columns"}
+      [:h5 "Current Bid:"]]
+     [:div
+      {:class "one column"}
+      [:h5 "Quantity:"]]
+     [:div
+      {:class "one column"}
+      [:h5 quantity]]
+     [:div
+      {:class "one column"}
+      [:h5 "Rank:"]]
+     [:div
+      {:class "one column" :style {:text-align "left"}}
+      [:h5 (str rank "'s")]]])
+
+(defn current-player-display [current-player-idx my-turn?]
+  [:div
+   {:class "boxed"}
+   "current player display"])
+
+(defn player-list-display [players current-player-idx]
+  [:div
+   {:class "boxed"}
+   "player list"])
+
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
         players (listen :players)
+        current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
         dice (get-in players [current-player-idx :dice])]
-    (println "my-turn?" my-turn?)
-    (println "players" players)
-    (println "current-player-idx" current-player-idx)
-    (println "dice" dice)
     [:div
-     "Check the console"
-     ]
+     [current-bid-display current-bid]
+
+     [:div
+      {:class "row"}
+      [:div
+       {:class "nine columns"}
+       [current-player-display current-player-idx my-turn?]]
+      [:div
+       {:class "three columns"}
+       [player-list-display players current-player-idx]]]]
+
     ))
 
 (defn game []
@@ -128,7 +163,7 @@
 (defn main-panel []
   [:div
    {:class "u-full-width"
-    :style {:width "90%"
+    :style {:width "75%"
             :margin "0 auto"
             :text-align "center"}}
    [header]

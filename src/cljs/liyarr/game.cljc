@@ -115,5 +115,6 @@
   {:players (into []
                   (for [player players]
                     (-> (initialize-player (:name player)))))
+   :current-bid {::quantity 0 ::rank 1}
    :current-player-idx 0
    :game-over? false})

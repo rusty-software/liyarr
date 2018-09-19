@@ -60,6 +60,13 @@
     (:players game)))
 
 (rf/reg-sub
+  :current-bid
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (:current-bid game)))
+
+(rf/reg-sub
  :current-player-idx
  (fn [_ _]
    (rf/subscribe [:game]))
