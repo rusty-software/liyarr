@@ -74,6 +74,12 @@
   border-color: #bee5eb;
 }
 
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
 .boxed {
   border: 1px solid #eee;
 }
