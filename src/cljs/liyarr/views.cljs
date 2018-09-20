@@ -140,12 +140,14 @@
      [:input
       {:id "rankInput"}]]
     [:button
+     {:on-click #(rf/dispatch [:new-bid])}
      "New Bid"]]
    [:div
     [:strong "... OR ..."]]
    [:div
     [:button
-     {:class "button-primary"}
+     {:class "button-primary"
+      :on-click #(rf/dispatch [:challenge])}
      "CHALLENGE!"]]])
 
 (defn current-player-display [{:keys [photo-url display-name dice]} my-turn?]

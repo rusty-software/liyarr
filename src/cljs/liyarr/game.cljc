@@ -120,3 +120,8 @@
    :current-bid {::quantity 0 ::rank 1}
    :current-player-idx 0
    :game-over? false})
+
+(defn new-bid
+  "Given a gamestate, quantity, and rank, returns a new game state with either the updated bid or error message."
+  [game-state quanity rank]
+  game-state)

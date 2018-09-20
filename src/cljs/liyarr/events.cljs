@@ -57,6 +57,7 @@
                       :on-success #(println "join game success")
                       :on-failure [:firebase-error]}}))
 
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx
@@ -71,3 +72,5 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
+(game-event! :new-bid game/new-bid)
+(game-event! :challenge game/challenge)
