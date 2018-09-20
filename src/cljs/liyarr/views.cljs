@@ -124,14 +124,38 @@
       {:class "one column" :style {:text-align "left"}}
       [:h5 (str rank "'s")]]])
 
-(defn current-player-display [{:keys [name photo-url display-name dice]} my-turn?]
+(defn bid-input []
+  [:div
+   [:div
+    [:div
+     {:class "row"}
+     [:label
+      {:for "quantityInput"}
+      "Quantity"]
+     [:input
+      {:id "quantityInput"}]
+     [:label
+      {:for "rankInput"}
+      "Rank"]
+     [:input
+      {:id "rankInput"}]]
+    [:button
+     "New Bid"]]
+   [:div
+    [:strong "... OR ..."]]
+   [:div
+    [:button
+     {:class "button-primary"}
+     "CHALLENGE!"]]])
+
+(defn current-player-display [{:keys [photo-url display-name dice]} my-turn?]
   [:div
    {:class "boxed"}
    (if my-turn?
      [:div
       {:class "row"}
       [:div
-       {:class "six columns"}
+       {:class "four columns"}
        [:div
         {:class "row"}
         [:h5 "YER DICE!"]]
@@ -141,12 +165,14 @@
           {:class (str "row dice dice-" d)}
           ])]
       [:div
-       {:class "six columns"}
+       {:class "eight columns"}
        [:div
         {:class "row"}
-        [:h5 "YER ACTION?"]]]]
+        [:h5 "YER ACTION?"]]
+       [bid-input]]]
      [:div
       {:class "row"}
+      [:img {:src photo-url :width "50px"}]
       [:h5 (str display-name "'s turn!")]])])
 
 (defn player-list-display [players current-player-idx]
@@ -184,10 +210,10 @@
      [:div
       {:class "row"}
       [:div
-       {:class "nine columns"}
+       {:class "seven columns"}
        [current-player-display current-player my-turn?]]
       [:div
-       {:class "three columns"}
+       {:class "five columns"}
        [player-list-display players current-player-idx]]]]))
 
 (defn game []
