@@ -123,5 +123,13 @@
 
 (defn new-bid
   "Given a gamestate, quantity, and rank, returns a new game state with either the updated bid or error message."
-  [game-state quanity rank]
-  game-state)
+  [game-state quantity rank]
+  (let [raw-bid (:current-bid game-state)
+        current-bid {::quantity (:quantity raw-bid) ::rank (:rank raw-bid)}
+        new-bid {::quantity quantity ::rank rank}]
+    (if (larger-bid? current-bid new-bid)
+      (assoc game-state :action-result :new-bid
+                        :current-bid new-bid)
+      (assoc game-state :action-result :invalid
+                        :msg "Yer new bid must be bigger'n the current one!"
+                        :current-bid current-bid))))

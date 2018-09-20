@@ -182,3 +182,28 @@
     (is (= 0 (:current-player-idx game-state)))
     (is (not (nil? (:game-over? game-state))))
     (is (not (:game-over? game-state)))))
+
+(deftest test-new-bid-success
+  (let [players [{::game/name "Player 1" ::game/dice [1 2 3 4 5]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]
+        game-state {:players players
+                    :current-player-idx 1
+                    :current-bid {:quantity 0 :rank 1}
+                    :penalized-player-idx 0}
+        new-state (game/new-bid game-state 6 4)]
+    (is (= :new-bid (:action-result new-state)))
+    (is (= {::game/quantity 6 ::game/rank 4} (:current-bid new-state)))))
+
+(deftest test-new-bid-failure
+  (let [players [{::game/name "Player 1" ::game/dice [1 2 3 4 5]}
+                 {::game/name "Player 2" ::game/dice [2 3 4 5]}
+                 {::game/name "Player 3" ::game/dice [1 2 3 4 5]}]
+        game-state {:players players
+                    :current-player-idx 1
+                    :current-bid {:quantity 5 :rank 4}
+                    :penalized-player-idx 0}
+        new-state (game/new-bid game-state 5 3)]
+    (is (= :invalid (:action-result new-state)))
+    (is (= "Yer new bid must be bigger'n the current one!" (:msg new-state)))
+    (is (= {::game/quantity 5 ::game/rank 4} (:current-bid new-state)))))
