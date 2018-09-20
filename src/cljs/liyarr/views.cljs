@@ -145,12 +145,33 @@
        [:div
         {:class "row"}
         [:h5 "YER ACTION?"]]]]
-     [:div (str display-name "' turn!")])])
+     [:div
+      {:class "row"}
+      [:h5 (str display-name "'s turn!")]])])
 
 (defn player-list-display [players current-player-idx]
   [:div
    {:class "boxed"}
-   "player list"])
+   [:div
+    {:class "row"}
+    [:h5 "YER PLAYERS"]]
+   (for [player players]
+     ^{:key (rand-int 1000000)}
+     [:div
+      {:class "row"}
+      [:div
+       {:class "two columns"}
+       [:img {:src (:photo-url player) :width "50px"}]]
+      [:div
+       {:class "ten columns"}
+       [:div
+        {:class "row"}
+        [:strong (:display-name player)]]
+       [:div
+        {:class "row"}
+        [:em (:name player)]]
+       ]
+      ])])
 
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
@@ -167,9 +188,7 @@
        [current-player-display current-player my-turn?]]
       [:div
        {:class "three columns"}
-       [player-list-display players current-player-idx]]]]
-
-    ))
+       [player-list-display players current-player-idx]]]]))
 
 (defn game []
   (condp = (listen :game-state)
