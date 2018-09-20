@@ -81,3 +81,10 @@
   (fn [[game user] _]
     (let [current-player-idx (get game :current-player-idx)]
       (= (:email user) (get-in game [:players current-player-idx :name])))))
+
+(rf/reg-sub
+ :msg
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:msg game)))

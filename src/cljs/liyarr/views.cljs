@@ -105,6 +105,11 @@
          {:key idx}
          (:name player)]))]))
 
+(defn msg-display [msg]
+  [:div
+   {:class "row alert alert-danger"}
+   msg])
+
 (defn current-bid-display [{:keys [quantity rank]}]
   [:div
      {:class "row"}
@@ -149,31 +154,36 @@
    [:div
     [:button
      {:class "button-primary"
+      :disabled "disabled"
       :on-click #(rf/dispatch [:challenge])}
      "CHALLENGE!"]]])
 
-(defn current-player-display [{:keys [photo-url display-name dice]} my-turn?]
+(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg]
   [:div
    {:class "boxed"}
    (if my-turn?
      [:div
-      {:class "row"}
+      (when msg
+        (msg-display msg))
       [:div
-       {:class "four columns"}
+       {:class "row"}
+
        [:div
-        {:class "row"}
-        [:h5 "YER DICE!"]]
-       (for [d dice]
-         ^{:key (rand-int 1000000)}
-         [:div
-          {:class (str "row dice dice-" d)}
-          ])]
-      [:div
-       {:class "eight columns"}
+        {:class "four columns"}
+        [:div
+         {:class "row"}
+         [:h5 "YER DICE!"]]
+        (for [d dice]
+          ^{:key (rand-int 1000000)}
+          [:div
+           {:class (str "row dice dice-" d)}
+           ])]
        [:div
-        {:class "row"}
-        [:h5 "YER ACTION?"]]
-       [bid-input]]]
+        {:class "eight columns"}
+        [:div
+         {:class "row"}
+         [:h5 "YER ACTION?"]]
+        [bid-input]]]]
      [:div
       {:class "row"}
       [:img {:src photo-url :width "50px"}]
@@ -206,19 +216,20 @@
 (defn active-game []
   (let [my-turn? (listen :my-turn?)
         players (listen :players)
+        msg (listen :msg)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
         current-player (get players current-player-idx)]
     [:div
-     [current-bid-display current-bid]
+     (current-bid-display current-bid)
      [:div
       {:class "row"}
       [:div
        {:class "seven columns"}
-       [current-player-display current-player my-turn?]]
+       (current-player-display current-player my-turn? msg)]
       [:div
        {:class "five columns"}
-       [player-list-display players current-player-idx]]]]))
+       (player-list-display players current-player-idx)]]]))
 
 (defn game []
   (condp = (listen :game-state)
