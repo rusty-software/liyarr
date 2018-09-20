@@ -3,7 +3,8 @@
   height: 95px;
   background-size: 75% 75%;
   background-repeat: no-repeat;
-  backgrou-position: center;
+  background-position: center;
+  margin: auto;
 }
 
 .tinydice {
