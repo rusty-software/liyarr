@@ -140,7 +140,9 @@
      [:input
       {:id "rankInput"}]]
     [:button
-     {:on-click #(rf/dispatch [:new-bid])}
+     {:on-click #(rf/dispatch [:new-bid
+                               (.-value (.getElementById js/document "quantityInput"))
+                               (.-value (.getElementById js/document "rankInput"))])}
      "New Bid"]]
    [:div
     [:strong "... OR ..."]]

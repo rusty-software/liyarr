@@ -57,6 +57,13 @@
                       :on-success #(println "join game success")
                       :on-failure [:firebase-error]}}))
 
+(rf/reg-event-fx
+  :new-bid
+  (fn [{:keys [db]} [_ quantity rank]]
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/new-bid % quantity rank)
+                      :on-success #(println "new bid success")
+                      :on-failure [:firebase-error]}}))
 
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
@@ -72,5 +79,4 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
-(game-event! :new-bid game/new-bid)
 (game-event! :challenge game/challenge)
