@@ -170,8 +170,9 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [succeeded? penalized-player-idx players]} (game/challenge-bid game-state)]
+        {:keys [succeeded? penalized-player-idx players action-result]} (game/challenge-bid game-state)]
     (is succeeded?)
+    (is (= :challenge action-result))
     (is (= 0 penalized-player-idx))
     (is (= [{:name "Player 1" :dice [1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2 2]}
@@ -185,8 +186,9 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [succeeded? penalized-player-idx players]} (game/challenge-bid game-state)]
+        {:keys [succeeded? penalized-player-idx players action-result]} (game/challenge-bid game-state)]
     (is (not succeeded?))
+    (is (= :failure action-result))
     (is (= 1 penalized-player-idx))
     (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2]}

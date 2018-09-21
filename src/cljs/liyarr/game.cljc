@@ -118,6 +118,14 @@
                         :current-bid current-bid))))
 
 (defn challenge-bid
-  "Given a game-state, returns a new game state with the challenge result."
+  "Given a game-state, returns a new game state with the challenge result and messaging."
   [{:keys [players current-bid current-player-idx] :as game-state}]
-  (merge game-state (challenge players current-bid current-player-idx)))
+  (let [challenge-result (challenge players current-bid current-player-idx)
+        action-msg (if (:succeeded? challenge-result)
+                           {:action-result :challenge
+                            :msg "Well played, ye salty sea dog!"}
+                           {:action-result :failure
+                            :msg "'Twas a foolish challenge! Cost ye a dice!"})]
+    (merge game-state
+           challenge-result
+           action-msg)))
