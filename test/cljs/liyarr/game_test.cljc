@@ -1,5 +1,6 @@
 (ns liyarr.game-test
   (:require [clojure.test :refer [deftest testing is]]
+            [clojure.string :refer [blank?]]
             [liyarr.game :as game]))
 
 (deftest test-initialize-player
@@ -145,10 +146,12 @@
                     :current-player-idx 1
                     :current-bid {:quantity 0 :rank 1}
                     :penalized-player-idx 0}
-        new-state (game/new-bid game-state "6" "4")]
-    (is (= :new-bid (:action-result new-state)))
-    (is (= {:quantity 6 :rank 4} (:current-bid new-state)))
-    (is (= 2 (:current-player-idx new-state)))))
+        {:keys [action action-result msg current-bid current-player-idx]} (game/new-bid game-state "6" "4")]
+    (is (= :new-bid action))
+    (is (= :success action-result))
+    (is (nil? msg))
+    (is (= {:quantity 6 :rank 4} current-bid))
+    (is (= 2 current-player-idx))))
 
 (deftest test-new-bid-failure
   (let [players [{:name "Player 1" :dice [1 2 3 4 5]}
@@ -158,11 +161,12 @@
                     :current-player-idx 1
                     :current-bid {:quantity 5 :rank 4}
                     :penalized-player-idx 0}
-        new-state (game/new-bid game-state "5" "3")]
-    (is (= :failure (:action-result new-state)))
-    (is (= "Yer new bid must be bigger'n the current one!" (:msg new-state)))
-    (is (= {:quantity 5 :rank 4} (:current-bid new-state)))
-    (is (= 1 (:current-player-idx new-state)))))
+        {:keys [action action-result msg current-bid current-player-idx]} (game/new-bid game-state "5" "3")]
+    (is (= :new-bid action))
+    (is (= :failure action-result))
+    (is (not (blank? msg)))
+    (is (= {:quantity 5 :rank 4} current-bid))
+    (is (= 1 current-player-idx))))
 
 (deftest test-challenge-bid-success
   (let [players [{:name "Player 1" :dice [1 1 1 1 1]}
@@ -171,9 +175,10 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [succeeded? penalized-player-idx players action-result]} (game/challenge-bid game-state)]
-    (is succeeded?)
-    (is (= :challenge action-result))
+        {:keys [action action-result msg penalized-player-idx players]} (game/challenge-bid game-state)]
+    (is (= :challenge-bid action))
+    (is (= :success action-result))
+    (is (not (blank? msg)))
     (is (= 0 penalized-player-idx))
     (is (= [{:name "Player 1" :dice [1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2 2]}
@@ -187,9 +192,10 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [succeeded? penalized-player-idx players action-result]} (game/challenge-bid game-state)]
-    (is (not succeeded?))
+        {:keys [action action-result msg penalized-player-idx players]} (game/challenge-bid game-state)]
+    (is (= :challenge-bid action))
     (is (= :failure action-result))
+    (is (not (blank? msg)))
     (is (= 1 penalized-player-idx))
     (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2]}

@@ -114,10 +114,12 @@
     (if (larger-bid? current-bid new-bid)
       (-> game-state
           (dissoc :msg)
-          (assoc :action-result :new-bid
+          (assoc :action :new-bid
+                 :action-result :success
                  :current-bid new-bid
                  :current-player-idx (next-player-idx players current-player-idx)))
-      (assoc game-state :action-result :failure
+      (assoc game-state :action :new-bid
+                        :action-result :failure
                         :msg "Yer new bid must be bigger'n the current one!"
                         :current-bid current-bid))))
 
@@ -126,9 +128,11 @@
   [{:keys [players current-bid current-player-idx] :as game-state}]
   (let [challenge-result (challenge players current-bid current-player-idx)
         action-msg (if (:succeeded? challenge-result)
-                     {:action-result :challenge
+                     {:action :challenge-bid
+                      :action-result :success
                       :msg "Well played, ye salty sea dog!"}
-                     {:action-result :failure
+                     {:action :challenge-bid
+                      :action-result :failure
                       :msg "'Twas a foolish challenge! Cost ye a dice!"})]
     (merge game-state
            challenge-result
