@@ -105,10 +105,13 @@
          {:key idx}
          (:name player)]))]))
 
-(defn msg-display [msg]
-  [:div
-   {:class "row alert alert-danger"}
-   msg])
+(defn msg-display [msg action-result]
+  (let [type (if (= :failure action-result)
+               "danger"
+               "success")]
+    [:div
+     {:class (str "row alert alert-" type)}
+     msg]))
 
 (defn current-bid-display [{:keys [quantity rank]}]
   [:div
@@ -154,17 +157,16 @@
    [:div
     [:button
      {:class "button-primary"
-      :disabled "disabled"
-      :on-click #(rf/dispatch [:challenge])}
+      :on-click #(rf/dispatch [:challenge-bid])}
      "CHALLENGE!"]]])
 
-(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg]
+(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg action-result]
   [:div
    {:class "boxed"}
    (if my-turn?
      [:div
       (when msg
-        (msg-display msg))
+        (msg-display msg action-result))
       [:div
        {:class "row"}
 
@@ -217,6 +219,7 @@
   (let [my-turn? (listen :my-turn?)
         players (listen :players)
         msg (listen :msg)
+        action-result (listen :action-result)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
         current-player (get players current-player-idx)]
@@ -226,7 +229,7 @@
       {:class "row"}
       [:div
        {:class "seven columns"}
-       (current-player-display current-player my-turn? msg)]
+       (current-player-display current-player my-turn? msg action-result)]
       [:div
        {:class "five columns"}
        (player-list-display players current-player-idx)]]]))

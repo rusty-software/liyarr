@@ -80,6 +80,12 @@
   border-color: #f5c6cb;
 }
 
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
 .boxed {
   border: 1px solid #eee;
 }

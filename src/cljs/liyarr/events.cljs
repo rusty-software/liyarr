@@ -79,4 +79,4 @@
          {})))))
 
 (game-event! :start-game game/initialize-game)
-(game-event! :challenge game/challenge)
+(game-event! :challenge-bid game/challenge-bid)

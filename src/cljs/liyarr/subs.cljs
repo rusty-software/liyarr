@@ -88,3 +88,10 @@
    (rf/subscribe [:game]))
  (fn [game _]
    (:msg game)))
+
+(rf/reg-sub
+ :action-result
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:action-result game)))
