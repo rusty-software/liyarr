@@ -120,3 +120,8 @@
       (assoc game-state :action-result :invalid
                         :msg "Yer new bid must be bigger'n the current one!"
                         :current-bid current-bid))))
+
+(defn challenge-bid
+  "Given a game-state, returns a new game state with the challenge result."
+  [{:keys [players current-bid current-player-idx] :as game-state}]
+  (merge game-state (challenge players current-bid current-player-idx)))

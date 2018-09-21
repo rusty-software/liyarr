@@ -172,3 +172,33 @@
     (is (= "Yer new bid must be bigger'n the current one!" (:msg new-state)))
     (is (= {:quantity 5 :rank 4} (:current-bid new-state)))
     (is (= 1 (:current-player-idx new-state)))))
+
+(deftest test-challenge-bid-success
+  (let [players [{:name "Player 1" :dice [1 1 1 1 1]}
+                 {:name "Player 2" :dice [2 2 2 2 2]}
+                 {:name "Player 3" :dice [3 3 3 3 3]}]
+        game-state {:players players
+                    :current-bid {:quantity 1 :rank 4}
+                    :current-player-idx 1}
+        {:keys [succeeded? penalized-player-idx players]} (game/challenge-bid game-state)]
+    (is succeeded?)
+    (is (= 0 penalized-player-idx))
+    (is (= [{:name "Player 1" :dice [1 1 1 1]}
+            {:name "Player 2" :dice [2 2 2 2 2]}
+            {:name "Player 3" :dice [3 3 3 3 3]}]
+           players))))
+
+(deftest test-challenge-bid-failure
+  (let [players [{:name "Player 1" :dice [1 1 1 1 1]}
+                 {:name "Player 2" :dice [2 2 2 2 2]}
+                 {:name "Player 3" :dice [3 3 3 3 4]}]
+        game-state {:players players
+                    :current-bid {:quantity 1 :rank 4}
+                    :current-player-idx 1}
+        {:keys [succeeded? penalized-player-idx players]} (game/challenge-bid game-state)]
+    (is (not succeeded?))
+    (is (= 1 penalized-player-idx))
+    (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
+            {:name "Player 2" :dice [2 2 2 2]}
+            {:name "Player 3" :dice [3 3 3 3 4]}]
+           players))))
