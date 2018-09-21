@@ -158,7 +158,7 @@
                     :current-bid {:quantity 5 :rank 4}
                     :penalized-player-idx 0}
         new-state (game/new-bid game-state 5 3)]
-    (is (= :invalid (:action-result new-state)))
+    (is (= :failure (:action-result new-state)))
     (is (= "Yer new bid must be bigger'n the current one!" (:msg new-state)))
     (is (= {:quantity 5 :rank 4} (:current-bid new-state)))
     (is (= 1 (:current-player-idx new-state)))))
