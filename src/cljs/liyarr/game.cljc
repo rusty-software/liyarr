@@ -17,13 +17,6 @@
         (and (= second-quantity first-quantity)
              (> second-rank first-rank)))))
 
-(defn bid-satisfied?
-  "Given a bid, returns true if the quantity and rank are covered by the collection of dice; otherwise, false."
-  [{:keys [:quantity :rank]} dice-hands]
-  (let [rank-frequencies (frequencies (flatten dice-hands))
-        rank-quantity (get rank-frequencies rank 0)]
-    (>= rank-quantity quantity)))
-
 (defn ordered-indexes
   "Given a current index and a count of players, returns the next indexes of all future players."
   [current-player-idx players-count]
@@ -55,7 +48,9 @@
   of players where the challenge loser's dice collection has been decremented."
   [players current-bid current-player-idx]
   (let [dice-hands (map :dice players)
-        succeeded? (not (bid-satisfied? current-bid dice-hands))
+        rank-frequencies (frequencies (flatten dice-hands))
+        rank-quantity-total (get rank-frequencies (:rank current-bid) 0)
+        succeeded? (not (>= rank-quantity-total (:quantity current-bid)))
         idx-to-penalize (if succeeded?
                           (previous-player-idx players current-player-idx)
                           current-player-idx)
@@ -64,6 +59,7 @@
         players (assoc players idx-to-penalize penalized-player)]
     {:succeeded? succeeded?
      :penalized-player-idx idx-to-penalize
+     :rank-quantity-total rank-quantity-total
      :players players}))
 
 (defn game-over?

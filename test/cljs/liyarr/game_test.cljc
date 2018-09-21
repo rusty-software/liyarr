@@ -25,17 +25,6 @@
   (is (not (game/larger-bid? {:quantity 3 :rank 1}
                              {:quantity 2 :rank 6}))))
 
-(deftest test-bid-satisfied?
-  (is (game/bid-satisfied? {:quantity 2 :rank 5}
-                           [[1 2 3 4 5]
-                            [2 3 4 5 6]]))
-  (is (game/bid-satisfied? {:quantity 2 :rank 5}
-                           [[1 2 3 5 5]
-                            [2 3 4 4 6]]))
-  (is (not (game/bid-satisfied? {:quantity 2 :rank 6}
-                                [[1 2 3 4 5]
-                                 [2 3 4 5 6]]))))
-
 (deftest test-ordered-indexes
   (is (= [2 0 1] (game/ordered-indexes 1 3))))
 
@@ -69,6 +58,7 @@
         challenge-result (game/challenge players current-bid current-player-idx)]
     (is (:succeeded? challenge-result))
     (is (= 0 (:penalized-player-idx challenge-result)))
+    (is (= 0 (:rank-quantity-total challenge-result)))
     (is (= [{:name "Player 1" :dice [1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2 2]}
             {:name "Player 3" :dice [3 3 3 3 3]}]
