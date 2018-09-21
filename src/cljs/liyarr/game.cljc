@@ -1,5 +1,9 @@
 (ns liyarr.game)
 
+(defn str->int [s]
+  #?(:clj (java.lang.Integer/parseInt s)
+     :cljs (js/parseInt s)))
+
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."
   [qty]
@@ -106,7 +110,7 @@
 (defn new-bid
   "Given a game-state, quantity, and rank, returns a new game state with either the updated bid or error message."
   [{:keys [current-bid current-player-idx players] :as game-state} quantity rank]
-  (let [new-bid {:quantity quantity :rank rank}]
+  (let [new-bid {:quantity (str->int quantity) :rank (str->int rank)}]
     (if (larger-bid? current-bid new-bid)
       (-> game-state
           (dissoc :msg)

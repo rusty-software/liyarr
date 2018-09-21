@@ -106,7 +106,7 @@
          (:name player)]))]))
 
 (defn msg-display [msg action-result]
-  (let [type (if (= :failure action-result)
+  (let [type (if (= "failure" action-result)
                "danger"
                "success")]
     [:div

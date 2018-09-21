@@ -73,6 +73,7 @@
         challenge-result (game/challenge players current-bid current-player-idx)]
     (is (not (:succeeded? challenge-result)))
     (is (= 1 (:penalized-player-idx challenge-result)))
+    (is (= 1 (:rank-quantity-total challenge-result)))
     (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
             {:name "Player 2" :dice [2 2 2 2]}
             {:name "Player 3" :dice [3 3 3 3 4]}]
@@ -144,7 +145,7 @@
                     :current-player-idx 1
                     :current-bid {:quantity 0 :rank 1}
                     :penalized-player-idx 0}
-        new-state (game/new-bid game-state 6 4)]
+        new-state (game/new-bid game-state "6" "4")]
     (is (= :new-bid (:action-result new-state)))
     (is (= {:quantity 6 :rank 4} (:current-bid new-state)))
     (is (= 2 (:current-player-idx new-state)))))
@@ -157,7 +158,7 @@
                     :current-player-idx 1
                     :current-bid {:quantity 5 :rank 4}
                     :penalized-player-idx 0}
-        new-state (game/new-bid game-state 5 3)]
+        new-state (game/new-bid game-state "5" "3")]
     (is (= :failure (:action-result new-state)))
     (is (= "Yer new bid must be bigger'n the current one!" (:msg new-state)))
     (is (= {:quantity 5 :rank 4} (:current-bid new-state)))
