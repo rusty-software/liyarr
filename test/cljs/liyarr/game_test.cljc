@@ -201,3 +201,18 @@
             {:name "Player 2" :dice [2 2 2 2]}
             {:name "Player 3" :dice [3 3 3 3 4]}]
            players))))
+
+(deftest test-unactioned-state
+  (let [state {:current-bid {:quantity "1" :rank "1"}
+               :current-player-idx 0
+               :penalized-player-id 0
+               :players [{:name "Player 1" :dice [1 1 1 1 1]}
+                         {:name "Player 2" :dice [2 2 2 2 2]}
+                         {:name "Player 3" :dice [3 3 3 3 4]}]
+               :action :foo
+               :action-result :bar
+               :msg :baz}
+        new-state (game/unactioned-state state)]
+    (is (not (contains? new-state :action)))
+    (is (not (contains? new-state :action-result)))
+    (is (not (contains? new-state :msg)))))

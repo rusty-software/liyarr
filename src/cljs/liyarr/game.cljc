@@ -107,21 +107,28 @@
    :current-player-idx 0
    :game-over? false})
 
+(defn unactioned-state
+  "Given a game-state, returns a new state with action-related keys removed."
+  [game-state]
+  (dissoc game-state :action :action-result :msg))
+
 (defn new-bid
   "Given a game-state, quantity, and rank, returns a new game state with either the updated bid or error message."
   [{:keys [current-bid current-player-idx players] :as game-state} quantity rank]
   (let [new-bid {:quantity (str->int quantity) :rank (str->int rank)}]
     (if (larger-bid? current-bid new-bid)
       (-> game-state
-          (dissoc :msg)
+          (unactioned-state)
           (assoc :action :new-bid
                  :action-result :success
                  :current-bid new-bid
                  :current-player-idx (next-player-idx players current-player-idx)))
-      (assoc game-state :action :new-bid
-                        :action-result :failure
-                        :msg "Yer new bid must be bigger'n the current one!"
-                        :current-bid current-bid))))
+      (-> game-state
+          (unactioned-state)
+          (assoc :action :new-bid
+                 :action-result :failure
+                 :msg "Yer new bid must be bigger'n the current one!"
+                 :current-bid current-bid)))))
 
 (defn challenge-bid
   "Given a game-state, returns a new game state with the challenge result and messaging."
@@ -134,6 +141,7 @@
                      {:action :challenge-bid
                       :action-result :failure
                       :msg "'Twas a foolish challenge! Cost ye a dice!"})]
-    (merge game-state
+    (merge (unactioned-state game-state)
            challenge-result
            action-msg)))
+
