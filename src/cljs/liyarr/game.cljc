@@ -7,10 +7,10 @@
 (defn roll
   "Given a number of dice to roll, returns a vector of randomly rolled dice."
   [qty]
-  (sort
-    (into []
-          (for [_ (range qty)]
-            (inc (rand-int 6))))))
+  (vec
+    (sort
+      (for [_ (range qty)]
+        (inc (rand-int 6))))))
 
 (defn larger-bid?
   "Given a first bid, returns true if the second bid is larger; otherwise, false."
@@ -47,9 +47,10 @@
   (let [idxs (ordered-indexes current-player-idx (count players))]
     (first-idx-with-dice players idxs)))
 
+;; TODO: move penalty enforcement to new round
 (defn challenge
-  "Given a collection of players, the current bid, and the index of the challenger, returns an updated collection
-  of players where the challenge loser's dice collection has been decremented."
+  "Given a collection of players, the current bid, and the index of the challenger, returns a map indicating the
+  success/failure of the attempt, which player idx should be penalized, and the total of bid rank."
   [players current-bid current-player-idx]
   (let [dice-hands (map :dice players)
         rank-frequencies (frequencies (flatten dice-hands))
@@ -57,14 +58,10 @@
         succeeded? (not (>= rank-quantity-total (:quantity current-bid)))
         idx-to-penalize (if succeeded?
                           (previous-player-idx players current-player-idx)
-                          current-player-idx)
-        player-to-penalize (get players idx-to-penalize)
-        penalized-player (update player-to-penalize :dice (comp vec rest))
-        players (assoc players idx-to-penalize penalized-player)]
+                          current-player-idx)]
     {:succeeded? succeeded?
      :penalized-player-idx idx-to-penalize
-     :rank-quantity-total rank-quantity-total
-     :players players}))
+     :rank-quantity-total rank-quantity-total}))
 
 (defn game-over?
   "Given a collection of players, returns true if only one player has dice in their collection; otherwise, false."
@@ -85,6 +82,16 @@
   [game-state]
   (dissoc game-state :action :action-result :msg))
 
+(defn with-penalized-player
+  "Given a collection of players and potential penalization index, returns the players collection with the penalty
+  applied."
+  [players penalized-player-idx]
+  (if penalized-player-idx
+    (let [player-to-penalize (get players penalized-player-idx)
+          penalized-player (update player-to-penalize :dice (comp vec rest))]
+      (assoc players penalized-player-idx penalized-player))
+    players))
+
 (defn initialize-round
   "Given a game state, updates the game state with a new round.
 
@@ -93,11 +100,13 @@
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
   [{:keys [players current-player-idx penalized-player-idx] :as game-state}]
-  (let [next-idx (if penalized-player-idx
+  (let [players (with-penalized-player players penalized-player-idx)
+        next-idx (if penalized-player-idx
                    (next-player-idx players (dec penalized-player-idx))
                    (next-player-idx players current-player-idx))
-        updated-players (for [player players]
-                          (update player :dice (comp roll count)))]
+        updated-players (vec
+                          (for [player players]
+                            (update player :dice (comp roll count))))]
     (-> game-state
         (unactioned-state)
         (assoc :current-player-idx next-idx
@@ -108,9 +117,9 @@
 (defn initialize-game
   "Given a map containing player info, initializes a game state using that info."
   [{:keys [players]}]
-  {:players (into []
-                  (for [player players]
-                    (-> (initialize-player player))))
+  {:players (vec
+              (for [player players]
+                (-> (initialize-player player))))
    :current-player-idx 0
    :game-over? false})
 

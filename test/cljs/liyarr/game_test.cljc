@@ -59,11 +59,7 @@
         challenge-result (game/challenge players current-bid current-player-idx)]
     (is (:succeeded? challenge-result))
     (is (= 0 (:penalized-player-idx challenge-result)))
-    (is (= 0 (:rank-quantity-total challenge-result)))
-    (is (= [{:name "Player 1" :dice [1 1 1 1]}
-            {:name "Player 2" :dice [2 2 2 2 2]}
-            {:name "Player 3" :dice [3 3 3 3 3]}]
-           (:players challenge-result)))))
+    (is (= 0 (:rank-quantity-total challenge-result)))))
 
 (deftest test-challenge-failure
   (let [players [{:name "Player 1" :dice [1 1 1 1 1]}
@@ -74,11 +70,7 @@
         challenge-result (game/challenge players current-bid current-player-idx)]
     (is (not (:succeeded? challenge-result)))
     (is (= 1 (:penalized-player-idx challenge-result)))
-    (is (= 1 (:rank-quantity-total challenge-result)))
-    (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
-            {:name "Player 2" :dice [2 2 2 2]}
-            {:name "Player 3" :dice [3 3 3 3 4]}]
-           (:players challenge-result)))))
+    (is (= 1 (:rank-quantity-total challenge-result)))))
 
 (deftest test-game-over?
   (let [players-go [{:name "Player 1" :dice []}
@@ -119,10 +111,11 @@
                     :penalized-player-idx 0}
         new-state (game/initialize-round game-state)]
     (is (= 0 (:current-player-idx new-state)))
+    (is (= 4 (count (get-in new-state [:players 0 :dice]))))
     (is (nil? (:penalized-player-idx new-state)))))
 
 (deftest test-initialize-round-loser-eliminated
-  (let [players [{:name "Player 1" :dice []}
+  (let [players [{:name "Player 1" :dice [6]}
                  {:name "Player 2" :dice [2 3 4 5]}
                  {:name "Player 3" :dice [1 2 3 4 5]}]
         game-state {:players players
@@ -130,6 +123,7 @@
                     :penalized-player-idx 0}
         new-state (game/initialize-round game-state)]
     (is (= 1 (:current-player-idx new-state)))
+    (is (= 0 (count (get-in new-state [:players 0 :dice]))))
     (is (nil? (:penalized-player-idx new-state)))))
 
 (deftest test-initialize-game
@@ -179,15 +173,11 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [action action-result msg penalized-player-idx players]} (game/challenge-bid game-state)]
+        {:keys [action action-result msg penalized-player-idx]} (game/challenge-bid game-state)]
     (is (= :challenge-bid action))
     (is (= :success action-result))
     (is (not (blank? msg)))
-    (is (= 0 penalized-player-idx))
-    (is (= [{:name "Player 1" :dice [1 1 1 1]}
-            {:name "Player 2" :dice [2 2 2 2 2]}
-            {:name "Player 3" :dice [3 3 3 3 3]}]
-           players))))
+    (is (= 0 penalized-player-idx))))
 
 (deftest test-challenge-bid-failure
   (let [players [{:name "Player 1" :dice [1 1 1 1 1]}
@@ -196,15 +186,11 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [action action-result msg penalized-player-idx players]} (game/challenge-bid game-state)]
+        {:keys [action action-result msg penalized-player-idx]} (game/challenge-bid game-state)]
     (is (= :challenge-bid action))
     (is (= :failure action-result))
     (is (not (blank? msg)))
-    (is (= 1 penalized-player-idx))
-    (is (= [{:name "Player 1" :dice [1 1 1 1 1]}
-            {:name "Player 2" :dice [2 2 2 2]}
-            {:name "Player 3" :dice [3 3 3 3 4]}]
-           players))))
+    (is (= 1 penalized-player-idx))))
 
 (deftest test-unactioned-state
   (let [state {:current-bid {:quantity "1" :rank "1"}
