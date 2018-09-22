@@ -155,13 +155,14 @@
      {:class (str "row alert alert-" class)}
      display]))
 
-(defn action-inputs [challenged?]
+(defn action-inputs [current-bid challenged?]
   (if challenged?
     [:div
      [:button
       {:class "button-primary"
        :on-click #(rf/dispatch [:initialize-round])}
       "Next Round"]]
+
     [:div
      [:div
       [:div
@@ -181,15 +182,22 @@
                                  (.-value (.getElementById js/document "quantityInput"))
                                  (.-value (.getElementById js/document "rankInput"))])}
        "New Bid"]]
-     [:div
-      [:strong "... OR ..."]]
-     [:div
-      [:button
-       {:class "button-primary"
-        :on-click #(rf/dispatch [:challenge-bid])}
-       "CHALLENGE!"]]]))
+     (when current-bid
+       [:div
+        [:div
+         [:strong "... OR ..."]]
+        [:div
+         [:button
+          {:class "button-primary"
+           :on-click #(rf/dispatch [:challenge-bid])}
+          "CHALLENGE!"]]])]))
 
-(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg action-result challenged?]
+(defn current-player-display [{:keys [photo-url display-name dice]}
+                              my-turn?
+                              msg
+                              action-result
+                              current-bid
+                              challenged?]
   [:div
    {:class "boxed"}
    (if my-turn?
@@ -214,7 +222,7 @@
         [:div
          {:class "row"}
          [:h5 "YER ACTION?"]]
-        (action-inputs challenged?)]]]
+        (action-inputs current-bid challenged?)]]]
      [:div
       {:class "row"}
       [:img {:src photo-url :width "50px"}]
@@ -271,7 +279,7 @@
       {:class "row"}
       [:div
        {:class "seven columns"}
-       (current-player-display current-player my-turn? msg action-result challenged?)]
+       (current-player-display current-player my-turn? msg action-result current-bid challenged?)]
       [:div
        {:class "five columns"}
        (player-list-display user players current-player-idx action)]]]))
