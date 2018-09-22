@@ -113,24 +113,21 @@
      {:class (str "row alert alert-" type)}
      msg]))
 
-(defn current-bid-display [{:keys [quantity rank]}]
-  [:div
+(defn current-bid-display [{:keys [quantity rank] :as current-bid}]
+  (when current-bid
+    [:div
      {:class "row"}
      [:div
       {:class "three columns"}
       [:h5 "Current Bid:"]]
      [:div
       {:class "one column"}
-      [:h5 "Quantity:"]]
+      [:h5 (str quantity " X ")]]
      [:div
-      {:class "one column"}
-      [:h5 quantity]]
-     [:div
-      {:class "one column"}
-      [:h5 "Rank:"]]
-     [:div
-      {:class "one column" :style {:text-align "left"}}
-      [:h5 (str rank "'s")]]])
+      {:class (str "two columns")}
+      [:img {:src (str "../img/dice-" rank ".png")
+             :height "75px"
+             :width "75px"}]]]))
 
 (defn challenge-result-display [current-player action-result]
   (let [[result-desc class] (if (str/ends-with? action-result "failure")
@@ -243,7 +240,7 @@
     [:div
      (current-bid-display current-bid)
      (when (= "challenge-bid" action)
-       (challenge-result-display current-player action-result msg))
+       (challenge-result-display current-player action-result))
      [:div
       {:class "row"}
       [:div
