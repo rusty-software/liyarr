@@ -132,6 +132,15 @@
       {:class "one column" :style {:text-align "left"}}
       [:h5 (str rank "'s")]]])
 
+(defn challenge-result-display [current-player action-result]
+  (let [[result-desc class] (if (str/ends-with? action-result "failure")
+                              ["failed!" "danger"]
+                              ["succeeded!" "success"])
+        display (str (:display-name current-player) "'s challenge " result-desc)]
+    [:div
+     {:class (str "row alert alert-" class)}
+     display]))
+
 (defn bid-input []
   [:div
    [:div
@@ -233,6 +242,8 @@
         current-player (get players current-player-idx)]
     [:div
      (current-bid-display current-bid)
+     (when (= "challenge-bid" action)
+       (challenge-result-display current-player action-result msg))
      [:div
       {:class "row"}
       [:div
