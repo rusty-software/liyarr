@@ -135,7 +135,7 @@
              :style {:vertical-align "middle"}}]]]))
 
 (defn challenge-result-display [current-player action-result]
-  (let [[result-desc class] (if (str/ends-with? action-result "failure")
+  (let [[result-desc class] (if (= "failure" action-result)
                               ["failed!" "danger"]
                               ["succeeded!" "success"])
         display (str (:display-name current-player) "'s challenge " result-desc)]
@@ -143,35 +143,39 @@
      {:class (str "row alert alert-" class)}
      display]))
 
-(defn bid-input []
-  [:div
-   [:div
+(defn action-inputs [challenged?]
+  (if challenged?
     [:div
-     {:class "row"}
-     [:label
-      {:for "quantityInput"}
-      "Quantity"]
-     [:input
-      {:id "quantityInput"}]
-     [:label
-      {:for "rankInput"}
-      "Rank"]
-     [:input
-      {:id "rankInput"}]]
-    [:button
-     {:on-click #(rf/dispatch [:new-bid
-                               (.-value (.getElementById js/document "quantityInput"))
-                               (.-value (.getElementById js/document "rankInput"))])}
-     "New Bid"]]
-   [:div
-    [:strong "... OR ..."]]
-   [:div
-    [:button
-     {:class "button-primary"
-      :on-click #(rf/dispatch [:challenge-bid])}
-     "CHALLENGE!"]]])
+     [:button
+      "Next Round"]]
+    [:div
+     [:div
+      [:div
+       {:class "row"}
+       [:label
+        {:for "quantityInput"}
+        "Quantity"]
+       [:input
+        {:id "quantityInput"}]
+       [:label
+        {:for "rankInput"}
+        "Rank"]
+       [:input
+        {:id "rankInput"}]]
+      [:button
+       {:on-click #(rf/dispatch [:new-bid
+                                 (.-value (.getElementById js/document "quantityInput"))
+                                 (.-value (.getElementById js/document "rankInput"))])}
+       "New Bid"]]
+     [:div
+      [:strong "... OR ..."]]
+     [:div
+      [:button
+       {:class "button-primary"
+        :on-click #(rf/dispatch [:challenge-bid])}
+       "CHALLENGE!"]]]))
 
-(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg action-result]
+(defn current-player-display [{:keys [photo-url display-name dice]} my-turn? msg action-result challenged?]
   [:div
    {:class "boxed"}
    (if my-turn?
@@ -196,7 +200,7 @@
         [:div
          {:class "row"}
          [:h5 "YER ACTION?"]]
-        [bid-input]]]]
+        (action-inputs challenged?)]]]
      [:div
       {:class "row"}
       [:img {:src photo-url :width "50px"}]
@@ -238,6 +242,7 @@
         players (listen :players)
         msg (listen :msg)
         action (listen :action)
+        challenged? (= action "challenge-bid")
         action-result (listen :action-result)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
@@ -250,7 +255,7 @@
       {:class "row"}
       [:div
        {:class "seven columns"}
-       (current-player-display current-player my-turn? msg action-result)]
+       (current-player-display current-player my-turn? msg action-result challenged?)]
       [:div
        {:class "five columns"}
        (player-list-display players current-player-idx action)]]]))
