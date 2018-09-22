@@ -147,6 +147,8 @@
   (if challenged?
     [:div
      [:button
+      {:class "button-primary"
+       :on-click #(rf/dispatch [:initialize-round])}
       "Next Round"]]
     [:div
      [:div

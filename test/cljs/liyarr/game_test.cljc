@@ -90,18 +90,22 @@
     (is (game/game-over? players-go))
     (is (not (game/game-over? players-ngo)))))
 
-(deftest test-initialize-round-bid
+(deftest test-initialize-round
   (let [players [{:name "Player 1" :dice [1 2 3 4 5]}
                  {:name "Player 2" :dice [2 3 4 5]}
                  {:name "Player 3" :dice [1 2 3 4 5]}]
         game-state {:players players
-                    :current-player-idx 1}
+                    :current-player-idx 1
+                    :current-bid {:quantity 3 :rank 2}}
         game-state-0 {:players players
-                        :current-player-idx 2}
+                      :current-player-idx 2
+                      :current-bid {:quantity 4 :rank 5}}
         new-state (game/initialize-round game-state)
         new-state-0 (game/initialize-round game-state-0)]
     (is (= 2 (:current-player-idx new-state)))
     (is (= 0 (:current-player-idx new-state-0)))
+    (is (not (contains? new-state :current-bid)))
+    (is (not (contains? new-state-0 :current-bid)))
     ;; TODO: the following might have false failures; clean up when it matters
     (is (not= [1 2 3 4 5] (get-in new-state [:players 0 :dice]) (get-in new-state [:players 2 :dice])))
     (is (not= [2 3 4 5] (get-in new-state [:players 1 :dice])))))

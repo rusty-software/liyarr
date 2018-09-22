@@ -80,3 +80,4 @@
 
 (game-event! :start-game game/initialize-game)
 (game-event! :challenge-bid game/challenge-bid)
+(game-event! :initialize-round game/initialize-round)

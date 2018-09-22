@@ -80,9 +80,15 @@
    :photo-url photo-url
    :display-name display-name})
 
+(defn unactioned-state
+  "Given a game-state, returns a new state with action-related keys removed."
+  [game-state]
+  (dissoc game-state :action :action-result :msg))
+
 (defn initialize-round
   "Given a game state, updates the game state with a new round.
 
+  * Current bid is reset
   * All players' dice are shuffled
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
@@ -93,9 +99,11 @@
         updated-players (for [player players]
                           (update player :dice (comp roll count)))]
     (-> game-state
+        (unactioned-state)
         (assoc :current-player-idx next-idx
                :players updated-players)
-        (dissoc :penalized-player-idx))))
+        (dissoc :current-bid
+                :penalized-player-idx))))
 
 (defn initialize-game
   "Given a map containing player info, initializes a game state using that info."
@@ -105,11 +113,6 @@
                     (-> (initialize-player player))))
    :current-player-idx 0
    :game-over? false})
-
-(defn unactioned-state
-  "Given a game-state, returns a new state with action-related keys removed."
-  [game-state]
-  (dissoc game-state :action :action-result :msg))
 
 (defn new-bid
   "Given a game-state, quantity, and rank, returns a new game state with either the updated bid or error message."
