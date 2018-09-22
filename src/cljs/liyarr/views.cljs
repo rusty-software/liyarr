@@ -191,7 +191,7 @@
       [:img {:src photo-url :width "50px"}]
       [:h5 (str display-name "'s turn!")]])])
 
-(defn player-list-display [players current-player-idx]
+(defn player-list-display [players current-player-idx action]
   [:div
    {:class "boxed"}
    [:div
@@ -212,6 +212,13 @@
        [:div
         {:class "row"}
         [:em (:name player)]]
+       (when (= "challenge-bid" action)
+         [:div
+          {:class "row"}
+          (for [d (:dice player)]
+            ^{:key (rand-int 1000000)}
+            [:div
+             {:class (str "two columns tinydice dice-" d)}])])
        ]
       ])])
 
@@ -219,6 +226,7 @@
   (let [my-turn? (listen :my-turn?)
         players (listen :players)
         msg (listen :msg)
+        action (listen :action)
         action-result (listen :action-result)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)
@@ -232,7 +240,7 @@
        (current-player-display current-player my-turn? msg action-result)]
       [:div
        {:class "five columns"}
-       (player-list-display players current-player-idx)]]]))
+       (player-list-display players current-player-idx action)]]]))
 
 (defn game []
   (condp = (listen :game-state)

@@ -8,13 +8,13 @@
 }
 
 .tinydice {
-  width: 50px;
-  height: 50px;
-  margin: 2px;
-  background-size: 75% 75%;
+  width: 30px;
+  height: 30px;
+  background-size: 60% 85%;
   background-repeat: no-repeat;
-  background-position: center;
-  }
+  background-position: top;
+  margin: auto;
+}
 
 .dice.dice-1 {
   background-image: url(../img/dice-1.png);
