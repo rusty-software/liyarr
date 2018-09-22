@@ -119,20 +119,32 @@
      {:class "row"}
      [:div
       {:class "three columns"}
-      [:h5 "Current Bid:"]]
+      [:img {:src "../img/pirate_flag.jpeg"
+             :height "75px"
+             :width "75px"
+             :style {:vertical-align "middle"
+                     :margin "5px 5px"}}]]
      [:div
-      {:class (str "three columns")}
+      {:class (str "six columns")}
       [:span
        {:style {:font-weight "300"
                 :font-size "2.4rem"
                 :line-height "1.5"
                 :letter-spacing "-.05rem"
                 :vertical-align "middle"}}
-       (str quantity " X ")]
+       (str "Current Bid: " quantity " X ")]
       [:img {:src (str "../img/dice-" rank ".png")
              :height "75px"
              :width "75px"
-             :style {:vertical-align "middle"}}]]]))
+             :style {:vertical-align "middle"
+                     :margin "5px 5px"}}]]
+     [:div
+      {:class "three columns"}
+      [:img {:src "../img/dice_and_cup.jpeg"
+             :height "75px"
+             :width "125px"
+             :style {:vertical-align "middle"
+                     :margin "5px 5px"}}]]]))
 
 (defn challenge-result-display [current-player action-result]
   (let [[result-desc class] (if (= "failure" action-result)
