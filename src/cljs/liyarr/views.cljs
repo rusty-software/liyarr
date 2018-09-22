@@ -208,7 +208,7 @@
       [:img {:src photo-url :width "50px"}]
       [:h5 (str display-name "'s turn!")]])])
 
-(defn player-list-display [players current-player-idx action]
+(defn player-list-display [user players current-player-idx action]
   [:div
    {:class "boxed"}
    [:div
@@ -229,7 +229,8 @@
        [:div
         {:class "row"}
         [:em (:name player)]]
-       (when (= "challenge-bid" action)
+       (when (or (= (:email user) (:name player))
+                 (= "challenge-bid" action))
          [:div
           {:class "row"}
           (for [d (:dice player)]
@@ -240,7 +241,8 @@
       ])])
 
 (defn active-game []
-  (let [my-turn? (listen :my-turn?)
+  (let [user (listen :user)
+        my-turn? (listen :my-turn?)
         players (listen :players)
         msg (listen :msg)
         action (listen :action)
@@ -260,7 +262,7 @@
        (current-player-display current-player my-turn? msg action-result challenged?)]
       [:div
        {:class "five columns"}
-       (player-list-display players current-player-idx action)]]]))
+       (player-list-display user players current-player-idx action)]]]))
 
 (defn game []
   (condp = (listen :game-state)
