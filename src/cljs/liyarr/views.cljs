@@ -1,12 +1,10 @@
 (ns liyarr.views
   (:require
     [clojure.string :as str]
+    [cljs.pprint :as pprint]
     [re-frame.core :as rf]
     [liyarr.config :as config]
-    [liyarr.subs :as subs]
-
-    [cljs.pprint :as pprint]
-    ))
+    [liyarr.subs]))
 
 (defn listen [query]
   @(rf/subscribe [query]))
@@ -29,13 +27,14 @@
      "wiki"]
     " for information on how to play."]
    (let [code (listen :game-code)]
-     (when code
-       [:h4
-        (str "Game code: " code)])
-     (let [game-state (listen :game-state)]
-       (when (or (= :over game-state)
-                 (and code (= :not-started game-state)))
-         [start-button])))
+     [:div
+      (when code
+        [:h4
+         (str "Game code: " code)])
+      (let [game-state (listen :game-state)]
+        (when (or (= :over game-state)
+                  (and code (= :not-started game-state)))
+          [start-button]))])
    (if (listen :logged-in?)
      [:button
       {:on-click #(rf/dispatch [:sign-out])}
@@ -341,6 +340,4 @@
       {:style {:text-align "left"}}
       [:hr]
       [:pre
-       (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])
-   ]
-  )
+       (with-out-str (pprint/pprint @(rf/subscribe [:db])))]])])
