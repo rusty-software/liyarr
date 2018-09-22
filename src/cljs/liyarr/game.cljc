@@ -107,12 +107,20 @@
         updated-players (vec
                           (for [player players]
                             (update player :dice (comp roll count))))]
-    (-> game-state
-        (unactioned-state)
-        (assoc :current-player-idx next-idx
-               :players updated-players)
-        (dissoc :current-bid
-                :penalized-player-idx))))
+    (if (game-over? players)
+      (-> game-state
+          (unactioned-state)
+          (assoc :game-over? true
+                 :current-player-idx next-idx
+                 :players players)
+          (dissoc :current-bid
+                  :penalized-player-idx))
+      (-> game-state
+          (unactioned-state)
+          (assoc :current-player-idx next-idx
+                 :players updated-players)
+          (dissoc :current-bid
+                  :penalized-player-idx)))))
 
 (defn initialize-game
   "Given a map containing player info, initializes a game state using that info."

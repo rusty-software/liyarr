@@ -261,8 +261,7 @@
             ^{:key (rand-int 1000000)}
             [:div
              {:class (str "two columns tinydice dice-" d)}])])
-       ]
-      ])])
+       ]])])
 
 (defn active-game []
   (let [user (listen :user)
@@ -288,9 +287,38 @@
        {:class "five columns"}
        (player-list-display user players current-player-idx action)]]]))
 
+(defn game-over []
+  (let [players (listen :players)
+        current-player-idx (listen :current-player-idx)
+        player (get players current-player-idx)]
+    [:div
+     [:div
+      {:class "row"}
+      [:h3 "GAME OVER! Well played, me hearties! Yer winner be:"]]
+     [:div
+      {:class (str "row")}
+      [:div
+       {:class "two columns"}
+       [:img {:src (:photo-url player)
+              :width "100px"}]]
+      [:div
+       {:class "ten columns"}
+       [:div
+        {:class "row"}
+        [:strong (:display-name player)]]
+       [:div
+        {:class "row"}
+        [:em (:name player)]]
+       [:div
+        {:class "row"}
+        (for [d (:dice player)]
+          ^{:key (rand-int 1000000)}
+          [:div
+           {:class (str "two columns dice dice-" d)}])]]]]))
+
 (defn game []
   (condp = (listen :game-state)
-    #_#_:over [game-over]
+    :over [game-over]
     :playing [active-game]
     :not-started [pending-game]))
 
