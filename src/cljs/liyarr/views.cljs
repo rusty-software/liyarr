@@ -121,13 +121,18 @@
       {:class "three columns"}
       [:h5 "Current Bid:"]]
      [:div
-      {:class "one column"}
-      [:h5 (str quantity " X ")]]
-     [:div
-      {:class (str "two columns")}
+      {:class (str "three columns")}
+      [:span
+       {:style {:font-weight "300"
+                :font-size "2.4rem"
+                :line-height "1.5"
+                :letter-spacing "-.05rem"
+                :vertical-align "middle"}}
+       (str quantity " X ")]
       [:img {:src (str "../img/dice-" rank ".png")
              :height "75px"
-             :width "75px"}]]]))
+             :width "75px"
+             :style {:vertical-align "middle"}}]]]))
 
 (defn challenge-result-display [current-player action-result]
   (let [[result-desc class] (if (str/ends-with? action-result "failure")
