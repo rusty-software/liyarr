@@ -234,10 +234,14 @@
    [:div
     {:class "row"}
     [:h5 "YER PLAYERS"]]
-   (for [player players]
+   (for [player players
+         :let [current-player-name (get-in players [current-player-idx :name])
+               row-class (if (= (:name player) current-player-name)
+                           " alert alert-warning"
+                           "")]]
      ^{:key (rand-int 1000000)}
      [:div
-      {:class "row"}
+      {:class (str "row" row-class)}
       [:div
        {:class "two columns"}
        [:img {:src (:photo-url player) :width "50px"}]]
