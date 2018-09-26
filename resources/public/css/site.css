@@ -92,6 +92,12 @@
   border-color: #ffeeba;
 }
 
+.alert-secondary {
+  color: #383d41;
+  background-color: #e2e3e5;
+  border-color: #d6d8db;
+}
+
 .boxed {
   border: 1px solid #eee;
 }

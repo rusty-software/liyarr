@@ -229,6 +229,17 @@
       [:img {:src photo-url :width "50px"}]
       [:h5 (str display-name "'s turn!")]])])
 
+(defn player-class [player current-player-name]
+  (cond
+    (zero? (count (:dice player)))
+    " alert alert-secondary"
+
+    (= (:name player) current-player-name)
+    " alert alert-warning"
+
+    :else
+    ""))
+
 (defn player-list-display [user players current-player-idx action]
   [:div
    {:class "boxed"}
@@ -237,9 +248,7 @@
     [:h5 "YER PLAYERS"]]
    (for [player players
          :let [current-player-name (get-in players [current-player-idx :name])
-               row-class (if (= (:name player) current-player-name)
-                           " alert alert-warning"
-                           "")]]
+               row-class (player-class player current-player-name)]]
      ^{:key (rand-int 1000000)}
      [:div
       {:class (str "row" row-class)}
