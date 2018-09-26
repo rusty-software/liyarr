@@ -145,11 +145,13 @@
              :style {:vertical-align "middle"
                      :margin "5px 5px"}}]]]))
 
-(defn challenge-result-display [current-player action-result]
-  (let [[result-desc class] (if (= "failure" action-result)
+(defn challenge-result-display [current-player action-result {:keys [rank]}]
+  (let [rank-quantity-total (listen :rank-quantity-total)
+        [result-desc class] (if (= "failure" action-result)
                               ["failed!" "danger"]
                               ["succeeded!" "success"])
-        display (str (:display-name current-player) "'s challenge " result-desc)]
+        display (str (:display-name current-player) "'s challenge " result-desc
+                     " There be " rank-quantity-total " o' the " rank "'s.")]
     [:div
      {:class (str "row alert alert-" class)}
      display]))
@@ -276,7 +278,7 @@
     [:div
      (current-bid-display current-bid)
      (when (= "challenge-bid" action)
-       (challenge-result-display current-player action-result))
+       (challenge-result-display current-player action-result current-bid))
      [:div
       {:class "row"}
       [:div

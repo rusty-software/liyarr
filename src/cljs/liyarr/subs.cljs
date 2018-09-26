@@ -102,3 +102,10 @@
    (rf/subscribe [:game]))
  (fn [game _]
    (:action-result game)))
+
+(rf/reg-sub
+ :rank-quantity-total
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:rank-quantity-total game)))
