@@ -206,3 +206,15 @@
     (is (not (contains? new-state :action)))
     (is (not (contains? new-state :action-result)))
     (is (not (contains? new-state :msg)))))
+
+(deftest test-boot-player
+  (let [state {:current-bid {:quantity "1" :rank "1"}
+               :current-player-idx 2
+               :penalized-player-id 2
+               :players [{:name "Player 1" :dice [1 1 1 1 1]}
+                         {:name "Player 2" :dice [2 2 2 2 2]}
+                         {:name "Player 3" :dice [3 3 3 3 4]}]}
+        new-state (game/boot-player state "Player 3")]
+    (is (= 2 (count (:players new-state))))
+    (is (= 0 (:current-player-idx new-state)))
+    (is (not (contains? new-state :penalized-player-idx)))))

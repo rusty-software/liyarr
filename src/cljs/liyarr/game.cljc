@@ -164,6 +164,7 @@
            challenge-result
            action-msg)))
 
+;; todo: take player idx instead of name
 (defn boot-player
   "Given a game state and a player name, returns a new game state with the player removed from the players list."
   [game-state player-name]
