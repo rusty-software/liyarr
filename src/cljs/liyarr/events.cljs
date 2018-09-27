@@ -1,7 +1,6 @@
 (ns liyarr.events
   (:require
     [re-frame.core :as rf]
-    [liyarr.config :as config]
     [liyarr.db :as db]
     [liyarr.game :as game]))
 
@@ -16,7 +15,7 @@
 
 (rf/reg-event-fx
   :sign-in
-  (fn [_ _] {:firebase/google-sign-in {:sign-in-method :redirect #_(if config/debug? :popup :redirect)}}))
+  (fn [_ _] {:firebase/google-sign-in {:sign-in-method :redirect}}))
 
 (rf/reg-event-db
   :set-user
@@ -63,6 +62,15 @@
     {:firebase/swap! {:path [(keyword (:game-code db))]
                       :function #(game/new-bid % quantity rank)
                       :on-success #(println "new bid success")
+                      :on-failure [:firebase-error]}}))
+
+(rf/reg-event-fx
+  :toggle-boot-buttons
+  (fn [{:keys [db]} [_]]
+    (println "toggling boot buttons")
+    {:firebase/swap! {:path [(keyword (:game-code db)) :display-boot-buttons?]
+                      :function (fn [display?] (not display?))
+                      :on-success #(println "toggle boot buttons success")
                       :on-failure [:firebase-error]}}))
 
 (defn game-event! [event f & args]
