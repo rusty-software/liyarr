@@ -109,3 +109,10 @@
    (rf/subscribe [:game]))
  (fn [game _]
    (:rank-quantity-total game)))
+
+(rf/reg-sub
+ :displaying-boot?
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:displaying-boot? game)))

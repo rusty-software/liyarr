@@ -241,37 +241,44 @@
     ""))
 
 (defn player-list-display [user players current-player-idx action]
-  [:div
-   {:class "boxed"}
-   [:div
-    {:class "row"}
-    [:h5 "YER PLAYERS"]]
-   (for [player players
-         :let [current-player-name (get-in players [current-player-idx :name])
-               row-class (player-class player current-player-name)]]
-     ^{:key (rand-int 1000000)}
+  (let [displaying-boot? (listen :displaying-boot?)]
+    [:div
+     {:class "boxed"}
      [:div
-      {:class (str "row" row-class)}
-      [:div
-       {:class "two columns"}
-       [:img {:src (:photo-url player) :width "50px"}]]
-      [:div
-       {:class "ten columns"}
+      {:class "row"}
+      [:h5 "YER PLAYERS"]]
+     (for [player players
+           :let [current-player-name (get-in players [current-player-idx :name])
+                 row-class (player-class player current-player-name)]]
+       ^{:key (rand-int 1000000)}
        [:div
-        {:class "row"}
-        [:strong (:display-name player)]]
-       [:div
-        {:class "row"}
-        [:em (:name player)]]
-       (when (or (= (:email user) (:name player))
-                 (= "challenge-bid" action))
+        {:class (str "row" row-class)}
+        [:div
+         {:class "two columns"}
+         [:img {:src (:photo-url player) :width "50px"}]]
+        [:div
+         {:class "ten columns"}
          [:div
           {:class "row"}
-          (for [d (:dice player)]
-            ^{:key (rand-int 1000000)}
-            [:div
-             {:class (str "two columns tinydice dice-" d)}])])
-       ]])])
+          [:strong (:display-name player)]]
+         [:div
+          {:class "row"}
+          [:em (:name player)]]
+         (when (or (= (:email user) (:name player))
+                   (= "challenge-bid" action))
+           [:div
+            {:class "row"}
+            (for [d (:dice player)]
+              ^{:key (rand-int 1000000)}
+              [:div
+               {:class (str "two columns tinydice dice-" d)}])])
+         (when displaying-boot?
+           [:div
+            {:class "row"}
+            [:button
+             {:class "button-primary"
+              :on-click #(rf/dispatch [:boot-player (:name player)])}
+             "Walk the plank!"]])]])]))
 
 (defn active-game []
   (let [user (listen :user)

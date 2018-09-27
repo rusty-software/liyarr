@@ -67,10 +67,17 @@
 (rf/reg-event-fx
   :toggle-boot-buttons
   (fn [{:keys [db]} [_]]
-    (println "toggling boot buttons")
-    {:firebase/swap! {:path [(keyword (:game-code db)) :display-boot-buttons?]
+    {:firebase/swap! {:path [(keyword (:game-code db)) :displaying-boot?]
                       :function (fn [display?] (not display?))
                       :on-success #(println "toggle boot buttons success")
+                      :on-failure [:firebase-error]}}))
+
+(rf/reg-event-fx
+  :boot-player
+  (fn [{:keys [db]} [_ name]]
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/boot-player % name)
+                      :on-success #(println "boot player success")
                       :on-failure [:firebase-error]}}))
 
 (defn game-event! [event f & args]
