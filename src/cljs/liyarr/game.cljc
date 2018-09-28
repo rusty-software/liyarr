@@ -164,8 +164,12 @@
            challenge-result
            action-msg)))
 
-;; todo: take player idx instead of name
 (defn boot-player
   "Given a game state and a player name, returns a new game state with the player removed from the players list."
-  [game-state player-name]
-  game-state)
+  [{:keys [players current-player-idx] :as game-state} player-idx]
+  (let [truncated-players (vec (concat (subvec players 0 player-idx) (subvec players (inc player-idx))))
+        updated-current-player-idx (if (= current-player-idx player-idx)
+                                     (next-player-idx truncated-players (dec player-idx))
+                                     current-player-idx)]
+    (assoc game-state :players truncated-players
+                      :current-player-idx updated-current-player-idx)))

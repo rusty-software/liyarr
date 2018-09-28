@@ -214,7 +214,7 @@
                :players [{:name "Player 1" :dice [1 1 1 1 1]}
                          {:name "Player 2" :dice [2 2 2 2 2]}
                          {:name "Player 3" :dice [3 3 3 3 4]}]}
-        new-state (game/boot-player state "Player 3")]
+        new-state (game/boot-player state 2)]
     (is (= 2 (count (:players new-state))))
     (is (= 0 (:current-player-idx new-state)))
     (is (not (contains? new-state :penalized-player-idx)))))
