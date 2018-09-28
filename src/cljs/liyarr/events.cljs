@@ -74,9 +74,9 @@
 
 (rf/reg-event-fx
   :boot-player
-  (fn [{:keys [db]} [_ name]]
+  (fn [{:keys [db]} [_ idx]]
     {:firebase/swap! {:path [(keyword (:game-code db))]
-                      :function #(game/boot-player % name)
+                      :function #(game/boot-player % idx)
                       :on-success #(println "boot player success")
                       :on-failure [:firebase-error]}}))
 

@@ -247,8 +247,9 @@
      [:div
       {:class "row"}
       [:h5 "YER PLAYERS"]]
-     (for [player players
-           :let [current-player-name (get-in players [current-player-idx :name])
+     (for [i (range (count players))
+           :let [player (get players i)
+                 current-player-name (get-in players [current-player-idx :name])
                  row-class (player-class player current-player-name)]]
        ^{:key (rand-int 1000000)}
        [:div
@@ -277,7 +278,7 @@
             {:class "row"}
             [:button
              {:class "button-primary"
-              :on-click #(rf/dispatch [:boot-player (:name player)])}
+              :on-click #(rf/dispatch [:boot-player i])}
              "Walk the plank!"]])]])]))
 
 (defn active-game []
