@@ -165,11 +165,10 @@
            action-msg)))
 
 (defn boot-player
-  "Given a game state and a player name, returns a new game state with the player removed from the players list."
-  [{:keys [players current-player-idx] :as game-state} player-idx]
-  (let [truncated-players (vec (concat (subvec players 0 player-idx) (subvec players (inc player-idx))))
-        updated-current-player-idx (if (= current-player-idx player-idx)
-                                     (next-player-idx truncated-players (dec player-idx))
-                                     current-player-idx)]
-    (assoc game-state :players truncated-players
-                      :current-player-idx updated-current-player-idx)))
+  "Given a game state and a player idx, re-initializes the current round without the player."
+  [{:keys [players] :as game-state} player-idx]
+  (let [updated-players (vec (concat (subvec players 0 player-idx) (subvec players (inc player-idx))))
+        updated-state (-> game-state
+                          (assoc :players updated-players)
+                          (dissoc :penalized-player-idx))]
+    (initialize-round updated-state)))
