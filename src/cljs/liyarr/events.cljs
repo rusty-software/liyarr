@@ -80,6 +80,14 @@
                       :on-success #(println "boot player success")
                       :on-failure [:firebase-error]}}))
 
+(rf/reg-event-fx
+  :start-game
+  (fn [{:keys [db]} [_ dice-count]]
+    {:firebase/swap! {:path [(keyword (:game-code db))]
+                      :function #(game/initialize-game % dice-count)
+                      :on-success #(println "start game success")
+                      :on-failure [:firebase-error]}}))
+
 (defn game-event! [event f & args]
   (let [enabled? (atom true)]
     (rf/reg-event-fx
@@ -93,6 +101,5 @@
                            :on-failure [:firebase-error]}}
          {})))))
 
-(game-event! :start-game game/initialize-game)
 (game-event! :challenge-bid game/challenge-bid)
 (game-event! :initialize-round game/initialize-round)

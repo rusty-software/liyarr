@@ -10,11 +10,24 @@
   @(rf/subscribe [query]))
 
 (defn start-button []
-  [:button
-   {:class "button-primary"
-    :style {:margin-right "10px"}
-    :on-click #(rf/dispatch [:start-game])}
-   "Start Game"])
+  [:div
+   {:class "row"}
+    [:span
+     {:style {:font-weight "700"}}
+     "Number of dice to start with per player:"]
+    [:select
+     {:id "diceCountInput"
+      :style {:margin "5px 5px"}}
+     (for [i (range 5 0 -1)]
+       ^{:key (rand-int 1000000)}
+       [:option
+        {:value i}
+        i])]
+    [:button
+     {:class "button-primary"
+      :style {:margin-right "10px"}
+      :on-click #(rf/dispatch [:start-game (.-value (.getElementById js/document "diceCountInput"))])}
+     "Start Game"]])
 
 (defn header []
   [:div
