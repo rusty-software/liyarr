@@ -255,7 +255,8 @@
     ""))
 
 (defn player-list-display [user players current-player-idx action]
-  (let [displaying-boot? (listen :displaying-boot?)]
+  (let [displaying-boot? (listen :displaying-boot?)
+        starting-dice (listen :starting-dice)]
     [:div
      {:class "boxed"}
      [:div
@@ -264,7 +265,8 @@
      (for [i (range (count players))
            :let [player (get players i)
                  current-player-name (get-in players [current-player-idx :name])
-                 row-class (player-class player current-player-name)]]
+                 row-class (player-class player current-player-name)
+                 dice-lost (- starting-dice (count (:dice player)))]]
        ^{:key (rand-int 1000000)}
        [:div
         {:class (str "row" row-class)}
@@ -275,7 +277,8 @@
          {:class "ten columns"}
          [:div
           {:class "row"}
-          [:strong (:display-name player)]]
+          [:strong (:display-name player)]
+          (str " (Dice lost: " dice-lost ")")]
          [:div
           {:class "row"}
           [:em (:name player)]]
