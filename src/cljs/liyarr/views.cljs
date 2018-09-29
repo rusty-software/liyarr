@@ -39,11 +39,12 @@
       :target "_blank"}
      "wiki"]
     " for information on how to play."]
-   (let [code (listen :game-code)]
+   (let [code (listen :game-code)
+         starting-dice (listen :starting-dice)]
      [:div
       (when code
         [:h4
-         (str "Game code: " code)])
+         (str "Game code: " code ", Starting Dice: " starting-dice)])
       (let [game-state (listen :game-state)]
         (when (or (= :over game-state)
                   (and code (= :not-started game-state)))

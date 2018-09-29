@@ -53,6 +53,13 @@
     (boolean user)))
 
 (rf/reg-sub
+  :starting-dice
+  (fn [_ _]
+    (rf/subscribe [:game]))
+  (fn [game _]
+    (:starting-dice game)))
+
+(rf/reg-sub
   :players
   (fn [_ _]
     (rf/subscribe [:game]))

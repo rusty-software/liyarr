@@ -128,6 +128,7 @@
               (for [player players]
                 (initialize-player player dice-count)))
    :current-player-idx 0
+   :starting-dice dice-count
    :game-over? false})
 
 (defn new-bid
