@@ -47,7 +47,6 @@
   (let [idxs (ordered-indexes current-player-idx (count players))]
     (first-idx-with-dice players idxs)))
 
-;; TODO: move penalty enforcement to new round
 (defn challenge
   "Given a collection of players, the current bid, and the index of the challenger, returns a map indicating the
   success/failure of the attempt, which player idx should be penalized, and the total of bid rank."
@@ -70,10 +69,10 @@
     (= 1 (count (filter #(< 0 %) dice-counts)))))
 
 (defn initialize-player
-  "Given a raw player, returns a map representing the initial player state."
-  [{:keys [name photo-url display-name]}]
+  "Given a raw player and a number of dice, returns a map representing the initial player state."
+  [{:keys [name photo-url display-name]} dice-count]
   {:name name
-   :dice (roll 5)
+   :dice (roll dice-count)
    :photo-url photo-url
    :display-name display-name})
 
@@ -123,11 +122,11 @@
                   :penalized-player-idx)))))
 
 (defn initialize-game
-  "Given a map containing player info, initializes a game state using that info."
-  [{:keys [players]}]
+  "Given a map containing player info and a number of dice to use, initializes a game state using that info."
+  [{:keys [players]} dice-count]
   {:players (vec
               (for [player players]
-                (-> (initialize-player player))))
+                (initialize-player player dice-count)))
    :current-player-idx 0
    :game-over? false})
 

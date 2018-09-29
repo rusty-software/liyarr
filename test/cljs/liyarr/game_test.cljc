@@ -4,8 +4,9 @@
             [liyarr.game :as game]))
 
 (deftest test-initialize-player
-  (let [player (game/initialize-player {:name "foo" :photo-url "bar" :display-name "baz"})]
-    (is (= 5 (count (:dice player))))))
+  (let [player (game/initialize-player {:name "foo" :photo-url "bar" :display-name "baz"} 4)]
+    (is (= 4 (count (:dice player))))
+    (is (= "foo" (:name player)))))
 
 (deftest test-roll
   (let [legit-value? (fn [dice] (every? #(and (< 0 %) (> 7 %)) dice))
@@ -128,7 +129,7 @@
 
 (deftest test-initialize-game
   (let [raw-players {:players [{:name "Player 1"} {:name "Player 2"} {:name "Player 3"}]}
-        game-state (game/initialize-game raw-players)]
+        game-state (game/initialize-game raw-players 3)]
     (is (= 3 (count (:players game-state))))
     (is (= "Player 1" (get-in game-state [:players 0 :name])))
     (is (= "Player 3" (get-in game-state [:players 2 :name])))
