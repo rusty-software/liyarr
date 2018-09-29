@@ -272,7 +272,12 @@
             (for [d (:dice player)]
               ^{:key (rand-int 1000000)}
               [:div
-               {:class (str "two columns tinydice dice-" d)}])])
+               {:class "two columns"}
+               [:img {:src (str "../img/dice-" d ".png")
+                      :height "30px"
+                      :width "30px"
+                      :style {:vertical-align "middle"
+                              :margin "2px 2px"}}]])])
          (when displaying-boot?
            [:div
             {:class "row"}
