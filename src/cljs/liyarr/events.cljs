@@ -27,6 +27,11 @@
   (fn [db [_ error]]
     (assoc db :firebase-error (pr-str error))))
 
+(defn user-bits [db]
+  {:name (get-in db [:user :email])
+   :photo-url (get-in db [:user :photo-url])
+   :display-name (get-in db [:user :display-name])})
+
 (rf/reg-event-fx
   :create-game
   (fn [{:keys [db]} [_]]
@@ -35,7 +40,7 @@
              :game-code code
              :view :pregame)
        :firebase/write {:path [(keyword code)]
-                        :value {:players [{:name (get-in db [:user :email])}]}
+                        :value {:players [(user-bits db)]}
                         :on-success #(js/console.log "wrote success")
                         :on-failure [:firebase-error]}})))
 
@@ -50,9 +55,7 @@
                                   (let [user-id (get-in db [:user :email])]
                                     (if (some (comp (partial = user-id) :name) players)
                                       players
-                                      (conj (vec players) {:name user-id
-                                                           :photo-url (get-in db [:user :photo-url])
-                                                           :display-name (get-in db [:user :display-name])}))))
+                                      (conj (vec players) (user-bits db)))))
                       :on-success #(println "join game success")
                       :on-failure [:firebase-error]}}))
 
