@@ -117,7 +117,8 @@
       (-> game-state
           (unactioned-state)
           (assoc :current-player-idx next-idx
-                 :players updated-players)
+                 :players updated-players
+                 :bidding? false)
           (dissoc :current-bid
                   :penalized-player-idx)))))
 
@@ -140,6 +141,7 @@
           (unactioned-state)
           (assoc :action :new-bid
                  :action-result :success
+                 :bidding? false
                  :current-bid new-bid
                  :current-player-idx (next-player-idx players current-player-idx)))
       (-> game-state

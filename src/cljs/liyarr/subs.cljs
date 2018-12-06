@@ -123,3 +123,10 @@
    (rf/subscribe [:game]))
  (fn [game _]
    (:displaying-boot? game)))
+
+(rf/reg-sub
+ :bidding?
+ (fn [_ _]
+   (rf/subscribe [:game]))
+ (fn [game _]
+   (:bidding? game)))

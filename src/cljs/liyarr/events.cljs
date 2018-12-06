@@ -2,7 +2,8 @@
   (:require
     [re-frame.core :as rf]
     [liyarr.db :as db]
-    [liyarr.game :as game]))
+    [liyarr.game :as game]
+    [clojure.string :as str]))
 
 (rf/reg-event-db
   :initialize-db
@@ -65,6 +66,14 @@
     {:firebase/swap! {:path [(keyword (:game-code db))]
                       :function #(game/new-bid % quantity rank)
                       :on-success #(println "new bid success")
+                      :on-failure [:firebase-error]}}))
+
+(rf/reg-event-fx
+  :bidding
+  (fn [{:keys [db]} [_ quantity rank]]
+    {:firebase/swap! {:path [(keyword (:game-code db)) :bidding?]
+                      :function #(or (not (str/blank? quantity))
+                                     (not (str/blank? rank)))
                       :on-failure [:firebase-error]}}))
 
 (rf/reg-event-fx

@@ -186,12 +186,18 @@
         {:for "quantityInput"}
         "Quantity"]
        [:input
-        {:id "quantityInput"}]
+        {:id "quantityInput"
+         :on-change #(rf/dispatch [:bidding
+                                   (.-value (.getElementById js/document "quantityInput"))
+                                   (.-value (.getElementById js/document "rankInput"))])}]
        [:label
         {:for "rankInput"}
         "Rank"]
        [:input
-        {:id "rankInput"}]]
+        {:id "rankInput"
+         :on-change #(rf/dispatch [:bidding
+                                   (.-value (.getElementById js/document "quantityInput"))
+                                   (.-value (.getElementById js/document "rankInput"))])}]]
       [:button
        {:on-click #(rf/dispatch [:new-bid
                                  (.-value (.getElementById js/document "quantityInput"))
@@ -204,6 +210,7 @@
         [:div
          [:button
           {:class "button-primary"
+           :disabled (listen :bidding?)
            :on-click #(rf/dispatch [:challenge-bid])}
           "CHALLENGE!"]]])]))
 
