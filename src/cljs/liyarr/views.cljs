@@ -212,7 +212,15 @@
           {:class "button-primary"
            :disabled (listen :bidding?)
            :on-click #(rf/dispatch [:challenge-bid])}
-          "CHALLENGE!"]]])]))
+          "CHALLENGE!"]]
+        [:div
+         [:strong "... OR ..."]]
+        [:div
+         [:button
+          {:class "button-primary"
+           :disabled (listen :bidding?)
+           :on-click #(rf/dispatch [:exact-bid])}
+          "THE CURRENT BID IS CORRECT."]]])]))
 
 (defn current-player-display [{:keys [photo-url display-name dice]}
                               my-turn?
@@ -316,7 +324,8 @@
         players (listen :players)
         msg (listen :msg)
         action (listen :action)
-        challenged? (= action "challenge-bid")
+        challenged? (or (= action "challenge-bid")
+                        (= action "exact-bid"))
         action-result (listen :action-result)
         current-bid (listen :current-bid)
         current-player-idx (listen :current-player-idx)

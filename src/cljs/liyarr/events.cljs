@@ -113,5 +113,6 @@
                            :on-failure [:firebase-error]}}
          {})))))
 
+(game-event! :exact-bid game/exact-bid)
 (game-event! :challenge-bid game/challenge-bid)
 (game-event! :initialize-round game/initialize-round)
