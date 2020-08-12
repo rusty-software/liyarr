@@ -47,6 +47,17 @@
   (let [idxs (ordered-indexes current-player-idx (count players))]
     (first-idx-with-dice players idxs)))
 
+(defn exact
+  [{:keys [players current-bid current-player-idx]}]
+  (let [dice-hands (map :dice players)
+        rank-frequencies (frequencies (flatten dice-hands))
+        rank-quantity-total (get rank-frequencies (:rank current-bid) 0)
+        succeeded? (= rank-quantity-total (:quantity current-bid))
+        reward-or-penalize (if succeeded? :rewarded-player-idx :penalized-player-idx)]
+    {:succeeded? succeeded?
+     reward-or-penalize current-player-idx
+     :rank-quantity-total rank-quantity-total}))
+
 (defn challenge
   "Given a collection of players, the current bid, and the index of the challenger, returns a map indicating the
   success/failure of the attempt, which player idx should be penalized, and the total of bid rank."
@@ -84,12 +95,32 @@
 (defn with-penalized-player
   "Given a collection of players and potential penalization index, returns the players collection with the penalty
   applied."
-  [players penalized-player-idx]
+  [{:keys [players penalized-player-idx]}]
   (if penalized-player-idx
     (let [player-to-penalize (get players penalized-player-idx)
           penalized-player (update player-to-penalize :dice (comp vec rest))]
       (assoc players penalized-player-idx penalized-player))
     players))
+
+(defn with-rewarded-player
+  "Given a collection of players and a potential penalization index,
+  returns the players with the reward applied."
+  [{:keys [rewarded-player-idx players starting-dice] :as game-state}]
+  (if rewarded-player-idx
+    (let [player-to-reward (get players rewarded-player-idx)
+          update? (< (count (:dice player-to-reward))
+                     starting-dice)
+          new-player (if update?
+                       (update player-to-reward :dice #(conj % 1))
+                       player-to-reward)]
+      (assoc-in game-state [:players rewarded-player-idx] new-player))
+    game-state))
+
+(defn with-updated-players
+  [{:keys [players penalized-player-idx] :as game-state}]
+  (-> game-state
+      with-rewarded-player
+      with-penalized-player))
 
 (defn initialize-round
   "Given a game state, updates the game state with a new round.
@@ -98,10 +129,15 @@
   * All players' dice are shuffled
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
-  [{:keys [players current-player-idx penalized-player-idx] :as game-state}]
-  (let [players (with-penalized-player players penalized-player-idx)
-        next-idx (if penalized-player-idx
-                   (next-player-idx players (dec penalized-player-idx))
+  [{:keys [players
+           current-player-idx
+           penalized-player-idx
+           rewarded-player-idx]
+    :as game-state}]
+  (let [players (with-updated-players game-state)
+        starting-idx (or penalized-player-idx rewarded-player-idx)
+        next-idx (if starting-idx
+                   (next-player-idx players (dec starting-idx))
                    (next-player-idx players current-player-idx))
         updated-players (vec
                           (for [player players]
@@ -113,14 +149,16 @@
                  :current-player-idx next-idx
                  :players players)
           (dissoc :current-bid
-                  :penalized-player-idx))
+                  :penalized-player-idx
+                  :rewarded-player-idx))
       (-> game-state
           (unactioned-state)
           (assoc :current-player-idx next-idx
                  :players updated-players
                  :bidding? false)
           (dissoc :current-bid
-                  :penalized-player-idx)))))
+                  :penalized-player-idx
+                  :rewarded-player-idx)))))
 
 (defn initialize-game
   "Given a map containing player info and a number of dice to use, initializes a game state using that info."
@@ -150,6 +188,21 @@
                  :action-result :failure
                  :msg "Yer new bid must be bigger'n the current one!"
                  :current-bid current-bid)))))
+
+(defn exact-bid
+  "Given a game-state, returns a new game state with the challenge result and messaging."
+  [{:keys [players current-bid current-player-idx] :as game-state}]
+  (let [exact-result (exact game-state)
+        action-msg (if (:succeeded? exact-result)
+                     {:action :exact-bid
+                      :action-result :success
+                      :msg "Ahoy, Me Hearties! You won yourself a dice!"}
+                     {:action :exact-bid
+                      :action-result :failure
+                      :msg "You foolish landlubber! Ye lost a dice."})]
+    (merge (unactioned-state game-state)
+           exact-result
+           action-msg)))
 
 (defn challenge-bid
   "Given a game-state, returns a new game state with the challenge result and messaging."
