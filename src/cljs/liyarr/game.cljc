@@ -137,8 +137,7 @@
   * All players' dice are shuffled
   * Current player index is incremented in the case of a bid
   * Current player index is set to the loser's index in the case of a challenge"
-  [{:keys [players
-           current-player-idx
+  [{:keys [current-player-idx
            penalized-player-idx
            rewarded-player-idx]
     :as game-state}]

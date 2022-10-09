@@ -74,34 +74,35 @@
     (is (= 1 (:rank-quantity-total challenge-result)))))
 
 (deftest test-game-over?
-  (let [players-go [{:name "Player 1" :dice []}
-                    {:name "Player 2" :dice []}
-                    {:name "Player 3" :dice [4]}]
-        players-ngo [{:name "Player 1" :dice []}
-                     {:name "Player 2" :dice [2]}
-                     {:name "Player 3" :dice [4]}]]
-    (is (game/game-over? players-go))
-    (is (not (game/game-over? players-ngo)))))
+  (is (game/game-over? [{:name "Player 1" :dice []}
+                        {:name "Player 2" :dice []}
+                        {:name "Player 3" :dice [4]}])
+      "Game should be over when only one player has dice")
+  (is (not (game/game-over? [{:name "Player 1" :dice []}
+                             {:name "Player 2" :dice [2]}
+                             {:name "Player 3" :dice [4]}]))
+      "Game should not be over if more than one player has dice"))
 
 (deftest test-initialize-round
   (let [players [{:name "Player 1" :dice [1 2 3 4 5]}
                  {:name "Player 2" :dice [2 3 4 5]}
-                 {:name "Player 3" :dice [1 2 3 4 5]}]
-        game-state {:players players
-                    :current-player-idx 1
-                    :current-bid {:quantity 3 :rank 2}}
-        game-state-0 {:players players
-                      :current-player-idx 2
-                      :current-bid {:quantity 4 :rank 5}}
-        new-state (game/initialize-round game-state)
-        new-state-0 (game/initialize-round game-state-0)]
-    (is (= 2 (:current-player-idx new-state)))
-    (is (= 0 (:current-player-idx new-state-0)))
-    (is (not (contains? new-state :current-bid)))
-    (is (not (contains? new-state-0 :current-bid)))
-    ;; TODO: the following might have false failures; clean up when it matters
-    (is (not= [1 2 3 4 5] (get-in new-state [:players 0 :dice]) (get-in new-state [:players 2 :dice])))
-    (is (not= [2 3 4 5] (get-in new-state [:players 1 :dice])))))
+                 {:name "Player 3" :dice [1 2 3 4 5]}]]
+    (testing "simple round initialization"
+      (let [new-state (game/initialize-round {:players players
+                                              :current-player-idx 1
+                                              :current-bid {:quantity 3 :rank 2}})]
+        (is (= 2 (:current-player-idx new-state)))
+        (is (not (contains? new-state :current-bid)))
+        ;; TODO: the following might have false failures; clean up when it matters
+        (is (not= [1 2 3 4 5]
+                  (get-in new-state [:players 0 :dice])
+                  (get-in new-state [:players 2 :dice])))
+        (is (not= [2 3 4 5] (get-in new-state [:players 1 :dice])))))
+    (testing "edge round initialization"
+      (let [new-state (game/initialize-round {:players players
+                                              :current-player-idx 2
+                                              :current-bid {:quantity 4 :rank 5}})]
+        (is (= 0 (:current-player-idx new-state)))))))
 
 (deftest test-initialize-round-challenge
   (let [players [{:name "Player 1" :dice [1 2 3 4 5]}
@@ -145,7 +146,10 @@
                     :current-player-idx 1
                     :current-bid {:quantity 0 :rank 1}
                     :penalized-player-idx 0}
-        {:keys [action action-result msg current-bid current-player-idx]} (game/new-bid game-state "6" "4")]
+        {:keys [action
+                action-result
+                msg current-bid
+                current-player-idx]} (game/new-bid game-state "6" "4")]
     (is (= :new-bid action))
     (is (= :success action-result))
     (is (nil? msg))
@@ -160,7 +164,11 @@
                     :current-player-idx 1
                     :current-bid {:quantity 5 :rank 4}
                     :penalized-player-idx 0}
-        {:keys [action action-result msg current-bid current-player-idx]} (game/new-bid game-state "5" "3")]
+        {:keys [action
+                action-result
+                msg
+                current-bid
+                current-player-idx]} (game/new-bid game-state "5" "3")]
     (is (= :new-bid action))
     (is (= :failure action-result))
     (is (not (blank? msg)))
@@ -174,7 +182,10 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [action action-result msg penalized-player-idx]} (game/challenge-bid game-state)]
+        {:keys [action
+                action-result
+                msg
+                penalized-player-idx]} (game/challenge-bid game-state)]
     (is (= :challenge-bid action))
     (is (= :success action-result))
     (is (not (blank? msg)))
@@ -187,7 +198,10 @@
         game-state {:players players
                     :current-bid {:quantity 1 :rank 4}
                     :current-player-idx 1}
-        {:keys [action action-result msg penalized-player-idx]} (game/challenge-bid game-state)]
+        {:keys [action
+                action-result
+                msg
+                penalized-player-idx]} (game/challenge-bid game-state)]
     (is (= :challenge-bid action))
     (is (= :failure action-result))
     (is (not (blank? msg)))
@@ -204,9 +218,12 @@
                :action-result :bar
                :msg :baz}
         new-state (game/unactioned-state state)]
-    (is (not (contains? new-state :action)))
-    (is (not (contains? new-state :action-result)))
-    (is (not (contains? new-state :msg)))))
+    (is (= #{:current-bid
+             :current-player-idx
+             :penalized-player-id
+             :players}
+           (set (keys new-state)))
+        "action, action-result, and msg should not be in the state keys")))
 
 (deftest test-boot-player
   (let [state {:current-bid {:quantity "1" :rank "1"}
