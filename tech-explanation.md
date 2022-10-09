@@ -73,18 +73,17 @@ When an _event_ occurs, something's got to handle it somehow. Enter: event handl
 
 The function that is returned from `(rf/reg-event-fx...)` is the _actual_ event handler. 
 
-It's worth noting again here that re-frame is _opinionated_. If you want to use it, you need to have emitters and handlers property _registered_. Luckily, it's simple enough to do: call the appropriate `(rf/reg-*` function. For example, the above function registers an event handling function with re-frame's data loop so that it can handle `:boot-player` events. The event handling function takes the _coeffects-map_ (which represents the current state of the app) and the event data vector. You can see the result of the handler, the _effect_, will be a map with key `:firebase/swap!` (which is the effect type) and value of another map (which is the effect data).
+It's worth noting again here that re-frame is _opinionated_. If you want to use it, you need to have emitters and handlers property _registered_. Luckily, it's simple enough to do: implement the appropriate `(rf/reg-*` function. For example, the above function registers an event handling function with re-frame's data loop so that it can handle `:boot-player` events. The event handling function takes the _coeffects-map_ (which represents the current state of the app) and the event data vector. You can see the result of the handler, the _effect_, will be a map with key `:firebase/swap!` (which is the effect type) and value of another map (which is the effect data).
 
 ### Effect handling
 
-Now we need something that will handle the _effect_s; something has to finally apply the mutation. In this app, all the interesting state is actually stored in a firebase real-time database (more on that later); there's exactly *one* place that is handled:
+Now we need something that will handle the _effect_; something has to finally apply the mutation. In this app, all the interesting state is actually stored in a firebase real-time database (more on that later); there's exactly *one* place that is handled:
 
 ```clojure
 (rf/reg-fx :firebase/swap! firebase-transaction-effect)
 ```
 
-`firebase-transaction-effect` is the actual worker function. 
-There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that, but if you're interested, you can have a look.
+`firebase-transaction-effect` is the actual worker function. There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that, but if you're interested, you can have a look.
 
 The main point is: the db has been changed! Our work is done! Right? ...right...?
 
@@ -134,7 +133,9 @@ Firebase is a suite of serverless services provided FOR FREE`*` by Google to eve
 1. **Hosting**. All the static assets (including the transpiled ClojureScript) are stored there.
 2. **Real-time Database**. This is where all the game state is saved. All the data is stored as json.
 
-There's not a lot more to say about it, honestly. Told you it would only be a little!
+I'll mention something that might've been bugging you at this point. How the heck does storing game state in a serverless real-time db allow for the multiplayer experience we're enjoying? If you suspected _long-lived websockets_ are established on loading the page, you were right! Firebase broadcasts state changes to all connected clients as they are submitted, so that everyone gets the new state as fast as the Internet can transmit them! This fits in beautifully with re-frame's data loop, as the broadcast changes are pushed into the client's state, allowing events to fire and subscriptions to update.
+
+There's not a lot more to say about it, honestly, at least not in the context of this little game and this little page. Told you it would only be a little!
 
 `*` FREE to a limit, beyond which you must pay for stuff. Luckily, this game isn't so popular as we have ever approached the limit. :-D
 
