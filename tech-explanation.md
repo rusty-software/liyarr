@@ -83,7 +83,7 @@ Now we need something that will handle the _effect_; something has to finally ap
 (rf/reg-fx :firebase/swap! firebase-transaction-effect)
 ```
 
-`firebase-transaction-effect` is the actual worker function. There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that, but if you're interested, you can have a look.
+`firebase-transaction-effect` is the actual worker function. There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that (because those interactions are heavy lifting), but if you're interested, you can have a look.
 
 The main point is: the db has been changed! Our work is done! Right? ...right...?
 
@@ -119,6 +119,38 @@ The more interesting bit is the second function: the _computation_ function. It'
 ### View
 
 Almost there! Anything that happens to be subscribed to `:players` in the view has its components re-computed with the new values extracted by the _subscription_. This results in changed React components!
+
+```clojure
+(defn listen [query]
+  @(rf/subscribe [query]))
+
+(defn active-game []
+  (let [user (listen :user)
+        my-turn? (listen :my-turn?)
+        players (listen :players)
+        msg (listen :msg)
+        action (listen :action)
+        challenged? (or (= action "challenge-bid")
+                        (= action "exact-bid"))
+        action-result (listen :action-result)
+        current-bid (listen :current-bid)
+        current-player-idx (listen :current-player-idx)
+        current-player (get players current-player-idx)]
+    [:div
+     (current-bid-display current-bid)
+     (when (= "challenge-bid" action)
+       (challenge-result-display current-player action-result current-bid))
+     [:div
+      {:class "row"}
+      [:div
+       {:class "seven columns"}
+       (current-player-display current-player my-turn? msg action-result current-bid challenged?)]
+      [:div
+       {:class "five columns"}
+       (player-list-display user players current-player-idx action)]]]))
+```
+
+You can see that `active-game` is listening for lots of different things, including changes to the players. Several sub components also depend on the players collection, and would potentially be changed when the list changes.
 
 ### DOM
 
