@@ -73,18 +73,18 @@ When an _event_ occurs, something's got to handle it somehow. Enter: event handl
 
 The function that is returned from `(rf/reg-event-fx...)` is the _actual_ event handler. 
 
-It's worth noting at this point that re-frame does a fair amount of wiring on application start up; anything prefixed with `(rf/reg-` is sniffed out. For example, the above event handler was registered as the application initialized so that it could handle `:boot-player` events using event handling function; that function takes the _coeffects-map_ (which represents the current state of the app) and the event data vector. You can see the result of the handler, the _effect_, will be a map with key `:firebase/swap!` (which is the effect type) and value of another map (which is the effect data).
+It's worth noting again here that re-frame is _opinionated_. If you want to use it, you need to have emitters and handlers property _registered_. Luckily, it's simple enough to do: call the appropriate `(rf/reg-*` function. For example, the above function registers an event handling function with re-frame's data loop so that it can handle `:boot-player` events. The event handling function takes the _coeffects-map_ (which represents the current state of the app) and the event data vector. You can see the result of the handler, the _effect_, will be a map with key `:firebase/swap!` (which is the effect type) and value of another map (which is the effect data).
 
 ### Effect handling
 
-Now we need something that will handle the _effect_s; something has to finally apply the mutation. In this app, all of the interesting state is actually stored in a firebase real-time database (more on that later); there's exactly *one* place that is handled:
+Now we need something that will handle the _effect_s; something has to finally apply the mutation. In this app, all the interesting state is actually stored in a firebase real-time database (more on that later); there's exactly *one* place that is handled:
 
 ```clojure
 (rf/reg-fx :firebase/swap! firebase-transaction-effect)
 ```
 
-`firebase-transaction-effect` is the actually worker function. 
-There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that, but if you're interested, you have have a look.
+`firebase-transaction-effect` is the actual worker function. 
+There's another small library that's handling the interactions with firebase, and it's leveraged in the worker function. I'll hand-wave that, but if you're interested, you can have a look.
 
 The main point is: the db has been changed! Our work is done! Right? ...right...?
 
@@ -115,7 +115,7 @@ The first function in the subscription is called a _signal_ function, and allows
 
 In our application, the state for any particular game is stored in firebase under a `game` key (games are started with a specific key value). The subscription that is relied on here, `:game`, is a listener to changes to values in the state associated with our game's particular key. < waves hands a bit >
 
-The more interesting bit is the second function: the _view_ function. It's the one that allows for computation of view differences. Most (all?) of the stuff in this game only requires simple data extraction as opposed to anything computational, though. In this case, the `:players` collection has changed, so the new value is extracted by the _view_ function.
+The more interesting bit is the second function: the _computation_ function. It's the one that allows for computation of view differences. Most (all?) of the stuff in this game only requires simple data extraction as opposed to anything computational, though. In this case, the `:players` collection has changed, so the new value is extracted by the computation function.
 
 ### View
 
